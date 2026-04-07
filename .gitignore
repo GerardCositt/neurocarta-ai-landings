@@ -1,0 +1,12 @@
+# Dependencies & build
+node_modules/
+dist/
+*.local
+
+# OS / editor
+.DS_Store
+*.log
+
+# Env
+.env
+.env.*

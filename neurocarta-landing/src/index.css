@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  /* LinkedIn-like neutrals + blue */
+  --color-brand: #0a66c2;
+  --color-brand-hover: #004182;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Fondo tipo feed LinkedIn: gris neutro, sin tintes violeta */
+body {
+  @apply bg-[#f3f2ef] text-[#1d2226] antialiased;
+}
+
+.bg-dot-grid {
+  background-image: radial-gradient(
+    rgba(0, 0, 0, 0.055) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
