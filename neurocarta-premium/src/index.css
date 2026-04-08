@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #080808;
+  color: #F0F0F0;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ─── Custom scrollbar ──────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0F0F0F; }
+::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3A3A3A; }
+
+/* ─── Selection ─────────────────────────────────────── */
+::selection { background: rgba(212, 168, 75, 0.25); color: #F0F0F0; }
+
+/* ─── Focus ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #D4A84B;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── Noise texture overlay (premium feel) ──────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─── Utilities ─────────────────────────────────────── */
+.section-pad { padding-top: 6rem; padding-bottom: 6rem; }
+@media (min-width: 768px) { .section-pad { padding-top: 8rem; padding-bottom: 8rem; } }
+
+.container-wide { max-width: 1200px; margin-inline: auto; padding-inline: 1.5rem; }
+@media (min-width: 640px) { .container-wide { padding-inline: 2rem; } }
+
+.gold-text {
+  background: linear-gradient(135deg, #D4A84B 0%, #F0C97A 50%, #C49535 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #252525 20%, #252525 80%, transparent);
+}
+
+/* ─── Score bar base ─────────────────────────────────── */
+.score-bar-track {
+  height: 3px;
+  background: rgba(212, 168, 75, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #D4A84B, #F0C97A);
+  border-radius: 2px;
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+/* ─── CTA button glow ───────────────────────────────── */
+.btn-cta-glow {
+  box-shadow: 0 0 0 0 rgba(200, 48, 48, 0);
+  transition: box-shadow 0.3s ease;
+}
+.btn-cta-glow:hover {
+  box-shadow: 0 0 24px 4px rgba(200, 48, 48, 0.35);
+}
+
+/* ─── Gold button glow ──────────────────────────────── */
+.btn-gold-glow:hover {
+  box-shadow: 0 0 20px 4px rgba(212, 168, 75, 0.3);
+}
