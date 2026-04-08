@@ -1,4 +1,24 @@
+import { useRef, useState } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
 const cx = (...c) => c.filter(Boolean).join(' ')
+
+/** Marca en UI: NeuroCarta + .ai en dorado + ® */
+function BrandName({ regClassName = 'text-white/70' }) {
+  return (
+    <>
+      NeuroCarta<span className="text-[#FFC107]">.ai</span>
+      <span
+        className={cx('align-super text-[10px]', regClassName)}
+        aria-label="marca registrada"
+      >
+        ®
+      </span>
+    </>
+  )
+}
 
 const red = 'bg-[#C52439] hover:bg-[#a01d2e] text-white shadow-lg shadow-[#C52439]/25'
 const orange =
@@ -12,30 +32,346 @@ function Micro({ children, className = '' }) {
   )
 }
 
-export default function App() {
+function ProductBadge({ tone, label, sub }) {
+  const isGold = tone === 'gold'
   return (
-    <div className="min-h-screen">
+    <div
+      className={cx(
+        'inline-flex items-center gap-3 rounded-2xl border px-4 py-2.5',
+        'shadow-[0_10px_22px_-14px_rgba(0,0,0,0.35)]',
+        isGold
+          ? 'border-[#e8d391] bg-[linear-gradient(135deg,#e8d391_0%,#d7b75b_55%,#b58c2f_100%)] text-[#2a1b00]'
+          : 'border-emerald-900/35 bg-[linear-gradient(135deg,#173d33_0%,#0f2e27_55%,#0a241f_100%)] text-white'
+      )}
+    >
+      <span
+        className={cx(
+          'inline-flex h-10 w-10 flex-none items-center justify-center rounded-full',
+          'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]',
+          isGold ? 'bg-white/30 text-[#2a1b00]' : 'bg-white/10 text-white'
+        )}
+        aria-hidden="true"
+      >
+        {isGold ? '♛' : '♥'}
+      </span>
+      <span className="leading-tight">
+        <span className={cx('block text-[12px] font-black uppercase tracking-[0.18em]', isGold ? 'text-[#2a1b00]' : 'text-white')}>
+          {label}
+        </span>
+        <span className={cx('block text-sm font-semibold', isGold ? 'text-[#3a2a0a]/85' : 'text-white/85')}>
+          {sub}
+        </span>
+      </span>
+    </div>
+  )
+}
+
+function AllergenIcon({ type }) {
+  const key = (type || '').toLowerCase()
+  const isLacteos = key.includes('láct') || key.includes('lact')
+  const cfg =
+    isLacteos
+      ? { abbr: 'LA', label: 'Lácteos', ring: 'ring-[#C52439]/25', border: 'border-[#C52439]/35', text: 'text-[#C52439]' }
+      : key.includes('pesc')
+        ? { abbr: 'PE', label: 'Pescado', ring: 'ring-sky-500/25', border: 'border-sky-500/40', text: 'text-sky-600' }
+        : key.includes('crust')
+          ? { abbr: 'CR', label: 'Crustáceos', ring: 'ring-orange-500/20', border: 'border-orange-500/40', text: 'text-orange-600' }
+          : key.includes('molus')
+            ? { abbr: 'MO', label: 'Moluscos', ring: 'ring-slate-500/20', border: 'border-slate-500/35', text: 'text-slate-600' }
+            : key.includes('sulfit')
+              ? { abbr: 'SU', label: 'Sulfitos', ring: 'ring-amber-500/20', border: 'border-amber-500/40', text: 'text-amber-700' }
+              : { abbr: 'AL', label: type, ring: 'ring-black/10', border: 'border-black/20', text: 'text-black/60' }
+
+  return (
+    <div
+      className={cx(
+        'inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white shadow-sm ring-1',
+        cfg.border,
+        cfg.ring
+      )}
+      title={cfg.label}
+      aria-label={cfg.label}
+    >
+      {isLacteos ? (
+        <img
+          src="/allergenos/lacteos.png"
+          alt=""
+          className="h-8 w-8 object-contain"
+          loading="lazy"
+          aria-hidden="true"
+        />
+      ) : (
+        <span className={cx('text-[11px] font-black tracking-wide', cfg.text)}>{cfg.abbr}</span>
+      )}
+    </div>
+  )
+}
+
+export default function App() {
+  /* ── Refs para cada bloque animable ── */
+  const heroRef      = useRef(null)
+  const statsRef     = useRef(null)
+  const problemRef   = useRef(null)
+  const messagesRef  = useRef(null)
+  const solutionRef  = useRef(null)
+  const demoRef      = useRef(null)
+  const benefitsRef  = useRef(null)
+  const stepsRef     = useRef(null)
+  const pricingRef   = useRef(null)
+  const ctaRef       = useRef(null)
+
+  // Pricing (mostrar precios + anclaje neuromarketing)
+  const annualBilling = true
+  const priceBasic = annualBilling ? '€59' : '€69'
+  const pricePro = annualBilling ? '€129' : '€149'
+  const pricePremium = annualBilling ? '€249' : '€289'
+  const periodLabel = annualBilling ? '/mes (fact. anual)' : '/mes'
+
+  // URLs del producto (cámbialas cuando tengas la app)
+  const LOGIN_URL = 'https://app.neurocarta.ai/login'
+  const SIGNUP_URL = 'https://app.neurocarta.ai/signup'
+
+  const demoItems = [
+    {
+      name: 'Ensalada de la casa (Tomate de temporada con ventresca)',
+      desc: 'Tomate de temporada con ventresca, regado con nuestra vinagreta especial.',
+      price: '14,00€',
+      badge: { label: 'Destacado', sub: 'Nuestra joya de carta', tone: 'gold' },
+      imageSrc: '/demo/ensalada-de-la-casa.png',
+      imageTone: 'from-[#d6c2a1] via-[#b7c7b4] to-[#0F0F0F]',
+      allergens: [],
+    },
+    {
+      name: 'Sopa de marisco',
+      desc: 'Preparada con ingredientes frescos y seleccionados. Reconfortante y con sabor intenso.',
+      price: '15,90€',
+      badge: null,
+      imageSrc: '/demo/sopa-de-marisco.png',
+      imageTone: 'from-[#c07a2f] via-[#8a4b1b] to-[#0F0F0F]',
+      allergens: [],
+      pairing: 'Uva: Albariño, Loureiro y Caiño blanco.',
+    },
+    {
+      name: 'Queso manchego',
+      desc: 'Curado, sin pasteurizar. Ideal para compartir. Sabor profundo y textura perfecta.',
+      price: '12,00€',
+      badge: { label: 'Recomendado', sub: 'El que más triunfa', tone: 'green' },
+      imageSrc: '/demo/queso-manchego.png',
+      imageTone: 'from-[#d9c9a6] via-[#7a5b3a] to-[#0F0F0F]',
+      allergens: ['Lácteos'],
+    },
+  ]
+
+  const [openItem, setOpenItem] = useState(null)
+
+  /* ──────────────────────────────────────────────────────────────
+     HERO — timeline al cargar (sin matchMedia, siempre corre)
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+    tl.from('.anim-banner',   { y: -30,  opacity: 0, duration: 0.2 })
+      .from('.anim-badge',    { y: -15,  opacity: 0, duration: 0.18 }, '+=0.02')
+      .from('.anim-h1',       { y: 50,   opacity: 0, duration: 0.28, skewY: 3 }, '+=0.02')
+      .from('.anim-subtitle', { y: 25,   opacity: 0, duration: 0.22 }, '+=0.02')
+      .from('.anim-cta-wrap', { y: 20,   opacity: 0, duration: 0.2  }, '+=0.02')
+      .from('.anim-micro',    { opacity: 0, duration: 0.18 }, '+=0.02')
+  }, { scope: heroRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     STATS — scrub: los números suben pegados al scroll
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-stat', {
+      y: 120, opacity: 0, scale: 0.6,
+      stagger: 0.3,
+      ease: 'back.out(2)',
+      scrollTrigger: {
+        trigger: statsRef.current,
+        start: 'top 90%',
+        end: 'top 72%',
+        scrub: 0.15,
+      },
+    })
+    // Contadores
+    const obj180 = { val: 0 }
+    const el180  = statsRef.current.querySelector('.stat-180')
+    gsap.to(obj180, {
+      val: 180, ease: 'none',
+      onUpdate: () => { if (el180) el180.textContent = '+' + Math.round(obj180.val) },
+      scrollTrigger: { trigger: statsRef.current, start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    const obj30 = { val: 0 }
+    const el30  = statsRef.current.querySelector('.stat-30')
+    gsap.to(obj30, {
+      val: 30, ease: 'none',
+      onUpdate: () => { if (el30) el30.textContent = '+' + Math.round(obj30.val) + '%' },
+      scrollTrigger: { trigger: statsRef.current, start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: statsRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     PROBLEMA — cards suben pegadas al scroll
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-problem-title', {
+      y: 80, opacity: 0,
+      scrollTrigger: { trigger: '.anim-problem-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-problem-card', {
+      y: 150, opacity: 0, scale: 0.85,
+      stagger: 0.15,
+      scrollTrigger: { trigger: '.anim-problem-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: problemRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     MENSAJES CLAVE — vienen de la izquierda con scrub
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-msg', {
+      x: -200, opacity: 0,
+      stagger: 0.12,
+      scrollTrigger: { trigger: messagesRef.current, start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: messagesRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     SOLUCIÓN — scrub con skew
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-solution-h2', {
+      y: 100, opacity: 0, skewY: 4,
+      scrollTrigger: { trigger: '.anim-solution-h2', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-solution-p', {
+      y: 80, opacity: 0,
+      scrollTrigger: { trigger: '.anim-solution-p', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: solutionRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     DEMO — antes/después entran desde lados opuestos con scrub
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-demo-title', {
+      y: 80, opacity: 0,
+      scrollTrigger: { trigger: '.anim-demo-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-before', {
+      x: -250, opacity: 0,
+      scrollTrigger: { trigger: '.anim-demo-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-after', {
+      x: 250, opacity: 0,
+      scrollTrigger: { trigger: '.anim-demo-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: demoRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     BENEFICIOS — estallan desde abajo con scrub
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-benefit-title', {
+      y: 80, opacity: 0,
+      scrollTrigger: { trigger: '.anim-benefit-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-benefit-card', {
+      y: 180, opacity: 0, scale: 0.75,
+      stagger: 0.15,
+      scrollTrigger: { trigger: '.anim-benefit-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: benefitsRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     PASOS — cascada con scrub
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-steps-title', {
+      y: 80, opacity: 0,
+      scrollTrigger: { trigger: '.anim-steps-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-step', {
+      y: 150, opacity: 0, scale: 0.8,
+      stagger: 0.15,
+      scrollTrigger: { trigger: '.anim-steps-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: stepsRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     PRICING — planes suben con scrub
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-pricing-title', {
+      y: 80, opacity: 0,
+      scrollTrigger: { trigger: '.anim-pricing-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-plan', {
+      y: 200, opacity: 0, scale: 0.8,
+      stagger: 0.12,
+      scrollTrigger: { trigger: '.anim-pricing-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+  }, { scope: pricingRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     CTA FINAL — headline + botones con scrub + glow pulsante
+  ────────────────────────────────────────────────────────────── */
+  useGSAP(() => {
+    gsap.from('.anim-cta-h2', {
+      y: 100, opacity: 0, skewY: 3,
+      scrollTrigger: { trigger: '.anim-cta-h2', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-cta-p', {
+      y: 60, opacity: 0,
+      scrollTrigger: { trigger: '.anim-cta-h2', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    gsap.from('.anim-cta-btn', {
+      y: 80, opacity: 0, scale: 0.6,
+      stagger: 0.1,
+      scrollTrigger: { trigger: '.anim-cta-btns', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
+    })
+    // Glow pulsante — este sí corre en tiempo real (no scrub)
+    gsap.to('.anim-cta-primary', {
+      boxShadow: '0 0 50px 14px rgba(197,36,57,0.7)',
+      repeat: -1, yoyo: true, duration: 1.6, ease: 'sine.inOut',
+      scrollTrigger: { trigger: '.anim-cta-btns', start: 'top 80%' },
+    })
+  }, { scope: ctaRef })
+
+  /* ──────────────────────────────────────────────────────────────
+     JSX — estructura idéntica al original, solo se añaden refs y
+     clases anim-* para targeting (ningún cambio visual)
+  ────────────────────────────────────────────────────────────── */
+  return (
+    <div ref={heroRef} className="min-h-screen">
       {/* Urgencia + escasez */}
-      <div className="border-b border-[#FFC107]/30 bg-[#FFC107] px-4 py-2 text-center text-sm font-bold text-[#0F0F0F]">
+      <div className="anim-banner border-b border-[#FFC107]/30 bg-[#FFC107] px-4 py-2 text-center text-sm font-bold text-[#0F0F0F]">
         Acceso limitado · Solo{' '}
         <span className="underline decoration-2 underline-offset-2">23 plazas</span>{' '}
         con onboarding guiado este mes
       </div>
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0F0F0F]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <span className="text-lg font-bold tracking-tight">
-            NeuroCarta<span className="text-[#FFC107]">.ai</span>
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <span className="text-base font-bold tracking-tight sm:text-lg">
+            <BrandName />
           </span>
-          <a
-            href="#cta"
-            className={cx(
-              'rounded-md px-4 py-2 text-sm font-bold transition',
-              red
-            )}
-          >
-            Quiero vender más
-          </a>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a
+              href={LOGIN_URL}
+              className="inline-flex whitespace-nowrap rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs font-black text-white/85 transition hover:border-white/25 hover:bg-white/10 sm:px-4 sm:text-sm"
+            >
+              Iniciar sesión
+            </a>
+            <a
+              href={SIGNUP_URL}
+              className={cx(
+                'rounded-md px-3 py-2 text-xs font-black transition sm:px-4 sm:text-sm',
+                red
+              )}
+            >
+              Crear cuenta
+            </a>
+          </div>
         </div>
       </header>
 
@@ -43,22 +379,22 @@ export default function App() {
       <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(197,36,57,0.15),transparent)]" />
         <div className="relative mx-auto max-w-4xl text-center">
-          <p className="mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#FFC107]">
+          <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
             No es una carta. Es una herramienta de ventas
           </p>
-          <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.1]">
+          <h1 className="anim-h1 text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.1]">
             Tu carta está{' '}
             <span className="text-[#FFC107]">perdiendo dinero</span> cada día
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80 sm:text-xl">
+          <p className="anim-subtitle mx-auto mt-4 max-w-2xl text-lg text-white/80 sm:text-xl">
             Estás tirando comida sin darte cuenta. Tus clientes no saben qué
             pedir — y tú pierdes ventas.
           </p>
-          <p className="mx-auto mt-4 max-w-xl text-base font-medium text-white sm:text-lg">
-            NeuroCarta.ai convierte tu carta en una máquina de vender platos.
+          <p className="anim-subtitle mx-auto mt-4 max-w-4xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.1]">
+            <BrandName /> convierte tu carta en una máquina de ventas.
           </p>
 
-          <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <div className="anim-cta-wrap mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <a
               href="#cta"
               className={cx(
@@ -78,35 +414,35 @@ export default function App() {
               Ver el antes y el después
             </a>
           </div>
-          <Micro>
+          <p className="anim-micro mt-5 text-center text-base font-medium leading-relaxed text-white/70 sm:text-lg">
             Empieza gratis en 2 minutos · Sin compromiso · Resultados desde el
             primer día
-          </Micro>
+          </p>
         </div>
       </section>
 
       {/* Prueba social */}
-      <section className="border-y border-white/10 bg-white/[0.03] px-4 py-8 sm:px-6">
+      <section ref={statsRef} className="border-y border-white/10 bg-white/[0.03] px-4 py-8 sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-8 text-center sm:flex-row sm:gap-16">
-          <div>
+          <div className="anim-stat">
             <div className="text-3xl font-black text-[#FFC107] sm:text-4xl">
-              +180
+              <span className="stat-180">+180</span>
             </div>
             <div className="mt-1 text-sm text-white/70">
-              restaurantes ya venden más con NeuroCarta
+              restaurantes ya venden más con <BrandName regClassName="text-white/55" />
             </div>
           </div>
-          <div className="hidden h-12 w-px bg-white/15 sm:block" />
-          <div>
+          <div className="anim-stat hidden h-12 w-px bg-white/15 sm:block" />
+          <div className="anim-stat">
             <div className="text-3xl font-black text-[#FFC107] sm:text-4xl">
-              +30%
+              <span className="stat-30">+30%</span>
             </div>
             <div className="mt-1 text-sm text-white/70">
               en platos destacados (media interna)
             </div>
           </div>
-          <div className="hidden h-12 w-px bg-white/15 sm:block" />
-          <div>
+          <div className="anim-stat hidden h-12 w-px bg-white/15 sm:block" />
+          <div className="anim-stat">
             <div className="text-3xl font-black text-[#FFC107] sm:text-4xl">
               5 min
             </div>
@@ -118,24 +454,27 @@ export default function App() {
       </section>
 
       {/* 2. PROBLEMA + Identificación */}
-      <section id="dolor" className="px-4 py-16 sm:px-6 sm:py-20">
+      <section ref={problemRef} id="dolor" className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="anim-problem-title text-2xl font-bold text-white sm:text-3xl">
             Si te pasa esto… no eres tú. Es tu carta.
           </h2>
         </div>
-        <ul className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-2">
+        <ul className="anim-problem-grid mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2">
           {[
-            'Los clientes tardan en decidir y piden “lo de siempre”.',
+            'Los clientes tardan en decidir y piden "lo de siempre".',
             'Tienes platos que no salen y acaban en la basura.',
             'Tiras comida porque no rotas lo que toca.',
             'El ticket medio se queda corto aunque el local esté lleno.',
           ].map((t) => (
             <li
               key={t}
-              className="flex gap-3 rounded-lg border border-[#C52439]/30 bg-[#C52439]/5 p-4 text-left text-white/90"
+              className="anim-problem-card flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-5 text-left text-base font-medium leading-relaxed text-white/90 shadow-[0_0_0_1px_rgba(197,36,57,0.18)] sm:text-[17px]"
             >
-              <span className="text-[#C52439]" aria-hidden="true">
+              <span
+                className="mt-0.5 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full bg-[#C52439]/15 text-sm font-black text-[#ff4d63]"
+                aria-hidden="true"
+              >
                 ✕
               </span>
               {t}
@@ -145,7 +484,7 @@ export default function App() {
       </section>
 
       {/* Mensajes clave */}
-      <section className="border-y border-white/10 bg-[#141414] px-4 py-12 sm:px-6">
+      <section ref={messagesRef} className="border-y border-white/10 bg-[#141414] px-4 py-12 sm:px-6">
         <div className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2">
           {[
             'Convierte clientes indecisos en pedidos.',
@@ -155,7 +494,7 @@ export default function App() {
           ].map((msg) => (
             <blockquote
               key={msg}
-              className="border-l-4 border-[#FFC107] pl-4 text-lg font-semibold text-white"
+              className="anim-msg border-l-4 border-[#FFC107] pl-4 text-lg font-semibold text-white"
             >
               {msg}
             </blockquote>
@@ -164,13 +503,13 @@ export default function App() {
       </section>
 
       {/* 3. SOLUCIÓN */}
-      <section className="px-4 py-16 sm:px-6 sm:py-20">
+      <section ref={solutionRef} className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">
-            NeuroCarta no “informa”.{' '}
+          <h2 className="anim-solution-h2 text-2xl font-bold sm:text-3xl">
+            <BrandName /> no "informa".{' '}
             <span className="text-[#FFC107]">Empuja a pedir</span>
           </h2>
-          <p className="mt-4 text-lg text-white/75">
+          <p className="anim-solution-p mt-4 text-lg text-white/75">
             IA que destaca platos rentables, mejora textos e imágenes, y ordena
             tu oferta para que el cliente decida más rápido — y tú vendas lo
             que te conviene.
@@ -179,79 +518,121 @@ export default function App() {
       </section>
 
       {/* 4. DEMO VISUAL antes / después */}
-      <section id="demo" className="scroll-mt-24 px-4 pb-16 sm:px-6 sm:pb-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">
+      <section ref={demoRef} id="demo" className="scroll-mt-24 overflow-x-hidden px-4 pb-16 sm:px-6 sm:pb-20">
+        <h2 className="anim-demo-title text-center text-2xl font-bold sm:text-3xl">
           Mira la diferencia. Sin rodeos.
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-center text-white/65">
           No explicamos. Enseñamos.
         </p>
 
-        <div className="mx-auto mt-10 grid max-w-5xl gap-6 lg:grid-cols-2">
+        <div className="anim-demo-grid mx-auto mt-10 grid max-w-5xl gap-6 lg:grid-cols-2">
           {/* ANTES */}
-          <div className="rounded-xl border border-white/15 bg-[#1a1a1a] p-5">
-            <div className="mb-4 text-xs font-bold uppercase tracking-widest text-white/40">
+          <div className="anim-before rounded-xl border border-white/15 bg-[#1a1a1a] p-5">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-black uppercase tracking-[0.22em] text-white/80">
+              <span className="h-2 w-2 rounded-full bg-white/40" aria-hidden="true" />
               Antes
             </div>
             <div className="space-y-3 text-sm text-white/60">
-              <div className="border-b border-white/10 pb-3">
-                <div className="font-medium text-white/80">Ensalada César</div>
-                <div className="mt-1">Lechuga, pollo, salsa.</div>
-                <div className="mt-2 text-white/50">9,50 €</div>
-              </div>
-              <div className="border-b border-white/10 pb-3">
-                <div className="font-medium text-white/80">Pasta carbonara</div>
-                <div className="mt-1">Pasta con nata y bacon.</div>
-                <div className="mt-2 text-white/50">11,00 €</div>
-              </div>
-              <div>
-                <div className="font-medium text-white/80">Brownie</div>
-                <div className="mt-1">Postre de chocolate.</div>
-                <div className="mt-2 text-white/50">4,50 €</div>
-              </div>
+              {demoItems.map((it, idx) => (
+                <div
+                  key={it.name}
+                  className={cx(idx !== demoItems.length - 1 ? 'border-b border-white/10 pb-3' : '')}
+                >
+                  <div className="max-w-full truncate font-medium text-white/85">
+                    {it.name.split(' (')[0]}
+                  </div>
+                  <div className="mt-1 whitespace-normal break-words text-white/60">
+                    {it.desc.split('.').at(0) || it.desc}
+                  </div>
+                  <div className="mt-2 text-white/45">{it.price}</div>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* DESPUÉS */}
-          <div className="relative rounded-xl border-2 border-[#FFC107]/50 bg-[#141414] p-5 shadow-[0_0_40px_-10px_rgba(255,193,7,0.25)]">
+          <div className="anim-after relative overflow-hidden rounded-xl border-2 border-[#FFC107]/50 bg-[#141414] p-5 shadow-[0_0_40px_-10px_rgba(255,193,7,0.25)]">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#FFC107]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/30 bg-[#FFC107]/10 px-4 py-2 text-sm font-black uppercase tracking-[0.22em] text-[#FFC107]">
+                <span className="h-2 w-2 rounded-full bg-[#FFC107]" aria-hidden="true" />
                 Después
               </span>
-              <span className="rounded bg-[#FFC107] px-2 py-0.5 text-[10px] font-black text-[#0F0F0F]">
+              <span className="rounded-full bg-[#FFC107] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#0F0F0F]">
                 IA ACTIVA
               </span>
             </div>
-            <div className="space-y-4">
-              <div className="overflow-hidden rounded-lg border border-white/10 bg-[#0F0F0F]">
-                <div className="h-24 bg-gradient-to-br from-white/10 to-white/5" />
-                <div className="p-3">
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="rounded bg-[#C52439] px-2 py-0.5 text-[10px] font-bold">
-                      🔥 Más vendido
-                    </span>
-                  </div>
-                  <div className="mt-2 font-bold text-white">Pasta trufa</div>
-                  <div className="mt-1 text-xs text-white/65">
-                    Texto corto que vende. Foto que abre el apetito.
-                  </div>
-                  <div className="mt-2 font-bold text-[#FFC107]">14,90 €</div>
-                </div>
+            {/* “Carta pública” (estilo real): claro + foto + badge + CTA */}
+            <div className="rounded-xl border border-white/10 bg-white p-4">
+              <div className="mb-3 text-sm font-black tracking-tight text-[#1a1a1a]">
+                Entrantes
               </div>
-              <div className="overflow-hidden rounded-lg border border-white/10 bg-[#0F0F0F]">
-                <div className="h-20 bg-gradient-to-br from-emerald-900/30 to-[#0F0F0F]" />
-                <div className="p-3">
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="rounded bg-[#FF7A00] px-2 py-0.5 text-[10px] font-bold text-white">
-                      ⭐ Recomendado
-                    </span>
-                    <span className="rounded border border-[#FFC107]/50 bg-[#FFC107]/10 px-2 py-0.5 text-[10px] font-bold text-[#FFC107]">
-                      ⚡ Alta demanda
-                    </span>
+              <div className="space-y-3">
+                {demoItems.map((it) => (
+                  <div
+                    key={it.name}
+                    className={cx(
+                      'group overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm transition',
+                      'hover:-translate-y-1 hover:border-black/20',
+                      'hover:shadow-[0_24px_60px_-18px_rgba(0,0,0,0.55),0_0_0_2px_rgba(197,36,57,0.18)]'
+                    )}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenItem(it)}
+                      className="flex w-full text-left focus:outline-none focus-visible:ring-4 focus-visible:ring-[#C52439]/20"
+                      aria-label={`Añadir / ver ficha de ${it.name}`}
+                    >
+                      {it.imageSrc ? (
+                        <img
+                          src={it.imageSrc}
+                          alt={it.name}
+                          className="h-[118px] w-[118px] flex-none object-cover transition duration-300 group-hover:scale-[1.06]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div
+                          className={cx(
+                            'h-[118px] w-[118px] flex-none bg-gradient-to-br transition duration-300 group-hover:scale-[1.06]',
+                            it.imageTone
+                          )}
+                          aria-hidden="true"
+                        />
+                      )}
+                      <div className="min-w-0 flex-1 p-4">
+                        {it.badge ? (
+                          <ProductBadge
+                            tone={it.badge.tone}
+                            label={it.badge.label}
+                            sub={it.badge.sub}
+                          />
+                        ) : null}
+
+                        <div className="mt-2 text-[20px] font-black leading-tight tracking-tight text-[#141414]">
+                          {it.name}
+                        </div>
+                        <div className="mt-2 text-sm leading-relaxed text-black/55">
+                          {it.desc}
+                        </div>
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                          <div className="text-lg font-black text-[#C52439]">
+                            {it.price}
+                          </div>
+                          <span className="inline-flex items-center justify-center rounded-full border border-[#C52439]/25 bg-[#C52439]/5 px-4 py-2 text-sm font-black text-[#C52439]">
+                            Añadir
+                          </span>
+                        </div>
+                        {it.allergens?.length ? (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {it.allergens.slice(0, 3).map((a) => (
+                              <AllergenIcon key={a} type={a} />
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    </button>
                   </div>
-                  <div className="mt-2 font-bold text-white">Bowl temporada</div>
-                  <div className="mt-2 font-bold text-white/90">11,50 €</div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -267,16 +648,112 @@ export default function App() {
           >
             Quiero vender más
           </a>
-          <Micro>Únete a los que ya no dejan dinero sobre la mesa</Micro>
+          <p className="mt-4 text-center text-lg text-white/75">
+            Únete a los que ya no dejan dinero sobre la mesa
+          </p>
         </div>
       </section>
 
+      {/* Modal “ficha de producto” (solo demo, para mostrar el efecto) */}
+      {openItem ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-4 sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ficha de producto"
+          onClick={() => setOpenItem(null)}
+        >
+          <div
+            className="w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative">
+              {openItem.imageSrc ? (
+                <img
+                  src={openItem.imageSrc}
+                  alt={openItem.name}
+                  className="h-56 w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className={cx('h-56 w-full bg-gradient-to-br', openItem.imageTone)}
+                  aria-hidden="true"
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => setOpenItem(null)}
+                className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur transition hover:bg-black/60"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="p-5">
+              {openItem.badge ? (
+                <ProductBadge
+                  tone={openItem.badge.tone}
+                  label={openItem.badge.label}
+                  sub={openItem.badge.sub}
+                />
+              ) : null}
+
+              <div className="mt-4 text-2xl font-black leading-tight tracking-tight text-[#141414]">
+                {openItem.name}
+              </div>
+              <div className="mt-3 text-sm leading-relaxed text-black/55">
+                {openItem.desc}
+              </div>
+
+              {openItem.pairing ? (
+                <div className="mt-5">
+                  <div className="text-center text-xs font-black uppercase tracking-widest text-[#7d0f1a]">
+                    Maridaje
+                  </div>
+                  <div className="mt-3 rounded-2xl bg-[#7d0f1a]/5 p-4 text-center text-sm text-black/55 ring-1 ring-[#7d0f1a]/20">
+                    {openItem.pairing}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="mt-5 border-t border-black/10 pt-5 text-center">
+                <div className="text-3xl font-black tracking-tight text-[#7d0f1a]">
+                  {openItem.price}
+                </div>
+              </div>
+
+              {openItem.allergens?.length ? (
+                <div className="mt-5">
+                  <div className="text-center text-xs font-black uppercase tracking-widest text-[#7d0f1a]">
+                    Alérgenos
+                  </div>
+                  <div className="mt-4 flex flex-wrap justify-center gap-3">
+                    {openItem.allergens.map((a) => (
+                      <AllergenIcon key={a} type={a} />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <button
+                type="button"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-[#7d0f1a] px-5 py-4 text-base font-black text-white shadow-lg shadow-[#7d0f1a]/25 transition hover:bg-[#671017]"
+              >
+                Añadir al pedido
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* 5. BENEFICIOS */}
-      <section className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">
+      <section ref={benefitsRef} className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
+        <h2 className="anim-benefit-title text-center text-3xl font-bold sm:text-4xl">
           Tres golpes. Un solo objetivo: caja.
         </h2>
-        <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
+        <div className="anim-benefit-grid mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
           {[
             {
               t: 'Más ventas',
@@ -290,27 +767,27 @@ export default function App() {
             },
             {
               t: 'Decisión rápida',
-              d: 'Menos “¿qué ponemos?”. Más pedidos en menos tiempo.',
+              d: 'Menos "¿qué ponemos?". Más pedidos en menos tiempo.',
               c: 'text-[#FFC107]',
             },
           ].map((b) => (
             <div
               key={b.t}
-              className="rounded-xl border border-white/10 bg-[#141414] p-6"
+              className="anim-benefit-card rounded-xl border border-white/10 bg-[#141414] p-7"
             >
-              <h3 className={cx('text-xl font-bold', b.c)}>{b.t}</h3>
-              <p className="mt-3 text-sm text-white/70">{b.d}</p>
+              <h3 className={cx('text-2xl font-bold', b.c)}>{b.t}</h3>
+              <p className="mt-3 text-base leading-relaxed text-white/70">{b.d}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* 6. CÓMO FUNCIONA */}
-      <section className="px-4 py-16 sm:px-6 sm:py-20">
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">
+      <section ref={stepsRef} className="px-4 py-16 sm:px-6 sm:py-20">
+        <h2 className="anim-steps-title text-center text-3xl font-bold sm:text-4xl">
           Cómo funciona (sin humo)
         </h2>
-        <div className="mx-auto mt-12 grid max-w-4xl gap-8 md:grid-cols-3">
+        <div className="anim-steps-grid mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-3">
           {[
             {
               n: '1',
@@ -328,134 +805,158 @@ export default function App() {
               d: 'Lo que no vende, se corrige. Rápido.',
             },
           ].map((s) => (
-            <div key={s.n} className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FFC107] text-2xl font-black text-[#0F0F0F]">
+            <div key={s.n} className="anim-step text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FFC107] text-3xl font-black text-[#0F0F0F]">
                 {s.n}
               </div>
-              <h3 className="mt-4 font-bold text-white">{s.t}</h3>
-              <p className="mt-2 text-sm text-white/65">{s.d}</p>
+              <h3 className="mt-5 text-xl font-black text-white">{s.t}</h3>
+              <p className="mt-2 text-base leading-relaxed text-white/65">{s.d}</p>
             </div>
           ))}
         </div>
 
-        <div className="mx-auto mt-12 max-w-2xl rounded-xl border border-[#FFC107]/30 bg-[#FFC107]/5 p-6 text-center">
-          <p className="font-bold text-[#FFC107]">Funciona en 5 minutos</p>
-          <p className="mt-2 text-sm text-white/75">
+        <div className="mx-auto mt-12 max-w-3xl rounded-xl border border-[#FFC107]/30 bg-[#FFC107]/5 p-7 text-center">
+          <p className="text-3xl font-black text-[#FFC107] sm:text-4xl">Funciona en 5 minutos</p>
+          <p className="mt-2 text-base text-white/75">
             Sin TPV obligatorio · Sin instalación compleja · Sin perder el día
             en formaciones
           </p>
         </div>
       </section>
 
-      {/* 7. PRICING — ancla: caro primero */}
-      <section id="precios" className="scroll-mt-24 border-t border-white/10 px-4 py-16 sm:px-6 sm:py-20">
+      {/* 7. PRICING */}
+      <section ref={pricingRef} id="precios" className="scroll-mt-24 border-t border-white/10 px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-2xl font-bold sm:text-3xl">
+          <h2 className="anim-pricing-title text-center text-2xl font-bold sm:text-3xl">
             Elige cómo quieres dominar la carta
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-center text-sm text-white/55">
-            Plan caro primero a propósito: anclas el valor. El del medio es el
-            que más restaurantes eligen.
-          </p>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="anim-pricing-grid mt-12 grid gap-6 lg:grid-cols-3">
             {/* PREMIUM — ancla */}
-            <div className="order-1 flex flex-col rounded-xl border border-white/15 bg-[#1a1a1a] p-7 lg:order-1">
-              <div className="text-xs font-bold uppercase tracking-widest text-[#FFC107]">
+            <div className="anim-plan order-1 flex flex-col rounded-xl border border-white/15 bg-[#1a1a1a] p-7 lg:order-1">
+              <div className="text-xs font-black uppercase tracking-widest text-[#FFC107]">
+                Plan
+              </div>
+              <div className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
                 Premium
               </div>
-              <div className="mt-2 text-3xl font-black text-white">
-                289 €
-                <span className="text-base font-normal text-white/45">/mes</span>
+              <div className="mt-4 flex items-end gap-2">
+                <div className="text-4xl font-black tracking-tight text-white">
+                  {pricePremium}
+                </div>
+                <div className="pb-1 text-sm font-semibold text-white/55">
+                  {periodLabel}
+                </div>
               </div>
               <p className="mt-2 text-sm text-white/55">
-                Volumen, marca y control total. Para quien quiere exprimir la
-                carta.
+                Para máximo rendimiento y equipos exigentes.
               </p>
-              <ul className="mt-6 flex-1 space-y-2 text-sm text-white/75">
-                <li>✓ IA ilimitada práctica</li>
-                <li>✓ Multi-local / reporting</li>
-                <li>✓ Soporte prioritario</li>
+              <p className="mt-1 text-xs text-white/40">Incluye todo lo del Pro, más:</p>
+              <ul className="mt-4 flex-1 space-y-2 text-sm text-white/75">
+                <li>✓ IA avanzada (cuota alta o ilimitada)</li>
+                <li>✓ Mayor capacidad de catálogo</li>
+                <li>✓ Prioridad en nuevas funcionalidades</li>
+                <li>✓ Soporte preferente</li>
               </ul>
+              <p className="mt-4 text-xs text-white/40">
+                Hasta 2.000 productos y 200 categorías · IA: cuota alta / ilimitada
+              </p>
               <a
                 href="#cta"
                 className={cx(
-                  'mt-8 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
+                  'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   orange
                 )}
               >
-                Hablar con ventas
+                Pasar a Premium
               </a>
-              <Micro className="!mt-2">Para equipos y franquicias</Micro>
             </div>
 
             {/* PRO — popular */}
-            <div className="order-2 relative flex flex-col rounded-xl border-2 border-[#C52439] bg-[#141414] p-7 shadow-[0_0_50px_-15px_rgba(197,36,57,0.5)] lg:order-2 lg:-mt-4 lg:mb-4">
+            <div className="anim-plan order-2 relative flex flex-col rounded-xl border-2 border-[#C52439] bg-[#141414] p-7 shadow-[0_0_50px_-15px_rgba(197,36,57,0.5)] lg:order-2 lg:-mt-4 lg:mb-4">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#C52439] px-4 py-1 text-xs font-black uppercase text-white">
                 Más popular
               </div>
-              <div className="text-xs font-bold uppercase tracking-widest text-white/60">
+              <div className="text-xs font-black uppercase tracking-widest text-white/60">
+                Plan
+              </div>
+              <div className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
                 Pro
               </div>
-              <div className="mt-2 text-3xl font-black text-white">
-                129 €
-                <span className="text-base font-normal text-white/45">/mes</span>
+              <div className="mt-4 flex items-end gap-2">
+                <div className="text-4xl font-black tracking-tight text-white">
+                  {pricePro}
+                </div>
+                <div className="pb-1 text-sm font-semibold text-white/60">
+                  {periodLabel}
+                </div>
               </div>
               <p className="mt-2 text-sm text-white/65">
-                Lo que la mayoría necesita para vende más ya.
+                Para restaurantes que quieren ahorrar tiempo y vender más.
               </p>
-              <ul className="mt-6 flex-1 space-y-2 text-sm text-white/85">
-                <li>✓ Destacados inteligentes</li>
-                <li>✓ Imágenes + copy IA</li>
-                <li>✓ Anti-mermas sugeridas</li>
-                <li>✓ Soporte 24h</li>
+              <p className="mt-1 text-xs text-white/40">Incluye todo lo del Básico, más:</p>
+              <ul className="mt-4 flex-1 space-y-2 text-sm text-white/85">
+                <li>✓ Traducciones (multi-idioma)</li>
+                <li>✓ Importación de productos (CSV)</li>
+                <li>✓ IA para crear/optimizar fichas</li>
+                <li>✓ Personalización avanzada de la carta</li>
+                <li>✓ Soporte prioritario</li>
               </ul>
+              <p className="mt-4 text-xs text-white/40">
+                Hasta 500 productos y 60 categorías · IA: cuota mensual incluida
+              </p>
               <a
                 href="#cta"
                 className={cx(
-                  'mt-8 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
+                  'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   red
                 )}
               >
-                Quiero vender más
+                Elegir Pro
               </a>
-              <Micro className="!mt-2">
-                Resultados desde el primer día · Sin permanencia en prueba
-              </Micro>
             </div>
 
-            {/* BASIC */}
-            <div className="order-3 flex flex-col rounded-xl border border-white/15 bg-[#1a1a1a] p-7 lg:order-3">
-              <div className="text-xs font-bold uppercase tracking-widest text-white/45">
-                Basic
+            {/* BÁSICO */}
+            <div className="anim-plan order-3 flex flex-col rounded-xl border border-white/15 bg-[#1a1a1a] p-7 lg:order-3">
+              <div className="text-xs font-black uppercase tracking-widest text-white/45">
+                Plan
               </div>
-              <div className="mt-2 text-3xl font-black text-white">
-                59 €
-                <span className="text-base font-normal text-white/45">/mes</span>
+              <div className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
+                Básico
+              </div>
+              <div className="mt-4 flex items-end gap-2">
+                <div className="text-4xl font-black tracking-tight text-white">
+                  {priceBasic}
+                </div>
+                <div className="pb-1 text-sm font-semibold text-white/55">
+                  {periodLabel}
+                </div>
               </div>
               <p className="mt-2 text-sm text-white/55">
-                Entrar fuerte sin arriesgar. Perfecto para un solo local.
+                Ideal para empezar con tu carta digital.
               </p>
-              <ul className="mt-6 flex-1 space-y-2 text-sm text-white/70">
-                <li>✓ Carta + QR</li>
-                <li>✓ IA base</li>
-                <li>✓ Email support</li>
+              <ul className="mt-4 flex-1 space-y-2 text-sm text-white/70">
+                <li>✓ Carta pública responsive (móvil y QR)</li>
+                <li>✓ Gestión de productos y categorías</li>
+                <li>✓ Ofertas y destacados</li>
+                <li>✓ Apariencia básica (logo/colores)</li>
+                <li>✓ Soporte por email</li>
               </ul>
+              <p className="mt-4 text-xs text-white/40">
+                Hasta 100 productos y 20 categorías · Sin IA, traducciones ni importaciones avanzadas
+              </p>
               <a
                 href="#cta"
-                className={cx(
-                  'mt-8 inline-flex w-full justify-center rounded-md border-2 border-[#FF7A00] bg-transparent py-3 text-center text-sm font-bold text-[#FF7A00] transition hover:bg-[#FF7A00] hover:text-white'
-                )}
+                className="mt-6 inline-flex w-full justify-center rounded-md border-2 border-[#FF7A00] bg-transparent py-3 text-center text-sm font-bold text-[#FF7A00] transition hover:bg-[#FF7A00] hover:text-white"
               >
-                Empezar
+                Empezar con Básico
               </a>
-              <Micro className="!mt-2">Empieza gratis en 2 minutos</Micro>
             </div>
           </div>
 
           {/* Franquicias */}
           <div className="mt-10 rounded-xl border border-[#FFC107]/40 bg-[#FFC107]/5 p-6 text-center sm:p-8">
-            <h3 className="text-lg font-bold text-[#FFC107]">
+            <h3 className="text-3xl font-black text-[#FFC107] sm:text-4xl">
               Franquicias & cadenas
             </h3>
             <p className="mx-auto mt-2 max-w-2xl text-sm text-white/75">
@@ -477,22 +978,23 @@ export default function App() {
 
       {/* 8. CTA FINAL */}
       <section
+        ref={ctaRef}
         id="cta"
         className="scroll-mt-24 border-t border-[#C52439]/40 bg-gradient-to-b from-[#1a0a0c] to-[#0F0F0F] px-4 py-20 sm:px-6"
       >
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-black leading-tight sm:text-4xl">
+          <h2 className="anim-cta-h2 text-3xl font-black leading-tight sm:text-4xl">
             Deja de regalar margen a la indecisión
           </h2>
-          <p className="mt-4 text-lg text-white/75">
-            Cada día sin NeuroCarta es dinero que no vuelve.{' '}
+          <p className="anim-cta-p mt-4 text-lg text-white/75">
+            Cada día sin <BrandName regClassName="text-white/55" /> es dinero que no vuelve.{' '}
             <span className="text-[#FFC107]">Plazas limitadas</span> este mes.
           </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="anim-cta-btns mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
-              href="mailto:hola@neurocarta.ai?subject=Demo%20NeuroCarta"
+              href="mailto:hola@neurocarta.ai?subject=Demo%20NeuroCarta.ai%C2%AE"
               className={cx(
-                'inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
+                'anim-cta-btn anim-cta-primary inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
                 red
               )}
             >
@@ -501,7 +1003,7 @@ export default function App() {
             <a
               href="mailto:hola@neurocarta.ai?subject=Quiero%20vender%20más"
               className={cx(
-                'inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
+                'anim-cta-btn inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
                 orange
               )}
             >
@@ -516,7 +1018,7 @@ export default function App() {
       </section>
 
       <footer className="border-t border-white/10 px-4 py-8 text-center text-xs text-white/40 sm:px-6">
-        NeuroCarta.ai · Carta que vende · No es información, es conversión
+        <BrandName regClassName="text-white/40" /> · Carta que vende · No es información, es conversión
       </footer>
     </div>
   )

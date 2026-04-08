@@ -32,7 +32,16 @@ function Stat({ label, value }) {
   )
 }
 
-function PricingCard({ name, price, periodLabel, description, credits, highlighted, items, ctaLabel }) {
+function PricingCard({
+  name,
+  price,
+  periodLabel,
+  description,
+  highlighted,
+  items,
+  ctaLabel,
+  footnote,
+}) {
   return (
     <div
       className={cx(
@@ -50,7 +59,7 @@ function PricingCard({ name, price, periodLabel, description, credits, highlight
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-lg font-semibold tracking-tight text-slate-900">
+          <div className="text-2xl font-semibold tracking-tight text-slate-900">
             {name}
           </div>
           <div className="mt-1 text-sm text-slate-600">{description}</div>
@@ -64,20 +73,8 @@ function PricingCard({ name, price, periodLabel, description, credits, highlight
         <div className="pb-1 text-sm text-slate-500">{periodLabel}</div>
       </div>
 
-      <div
-        className={cx(
-          'mt-3 inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm',
-          highlighted
-            ? 'border border-[#0A66C2]/25 bg-[#eef3f8] text-slate-800'
-            : 'border border-slate-200 bg-slate-50 text-slate-800'
-        )}
-      >
-        <span className="font-semibold text-slate-900">{credits}</span>
-        <span className="text-slate-600">créditos IA incluidos</span>
-      </div>
-
       <a
-        href="#demo"
+        href="#cta"
         className={cx(
           'mt-6 inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-sm font-semibold transition',
           highlighted
@@ -112,6 +109,12 @@ function PricingCard({ name, price, periodLabel, description, credits, highlight
           </li>
         ))}
       </ul>
+
+      {footnote ? (
+        <div className="mt-6 rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+          {footnote}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -121,52 +124,56 @@ export default function App() {
 
   const pricing = [
     {
-      name: 'Basic',
+      name: 'Básico',
       price: annualBilling ? '€59' : '€69',
       periodLabel: annualBilling ? '/mes (fact. anual)' : '/mes',
-      description: 'Para un local: carta moderna, rápida y optimizada.',
-      credits: annualBilling ? '700' : '500',
+      description: 'Ideal para empezar con tu carta digital.',
       highlighted: false,
       items: [
-        'Carta digital con QR',
-        'Descripciones inteligentes (IA) por plato',
-        'Imágenes IA por plato (pack incluido)',
-        'Destacados manuales (rentables / recomendados)',
-        'Edición rápida: precios, alérgenos y disponibilidad',
-        'Soporte por email (24–48h)',
+        'Carta pública responsive (móvil y QR)',
+        'Gestión de productos y categorías',
+        'Ofertas y destacados',
+        'Apariencia básica (logo/colores)',
+        'Soporte por email',
       ],
+      footnote:
+        'Límites: hasta 100 productos y 20 categorías. No incluye: IA, traducciones, importaciones avanzadas.',
+      ctaLabel: 'Empezar con Básico',
     },
     {
       name: 'Pro',
       price: annualBilling ? '€129' : '€149',
       periodLabel: annualBilling ? '/mes (fact. anual)' : '/mes',
-      description: 'Para crecer: optimización continua del menú.',
-      credits: annualBilling ? '2.500' : '2.000',
+      description: 'Para restaurantes que quieren ahorrar tiempo y vender más.',
       highlighted: true,
       items: [
-        'Todo lo de Basic',
-        'Destacado inteligente de productos (margen/rotación)',
-        'Recomendaciones de upselling (bebidas, extras, postres)',
-        'Mejoras de copy por IA (iteraciones)',
-        'Analítica por plato (interés y rendimiento)',
-        'Soporte prioritario (24h)',
+        'Incluye todo lo del Básico, más:',
+        'Traducciones (multi-idioma)',
+        'Importación de productos (CSV)',
+        'IA para ayudar a crear/optimizar fichas (según cuota)',
+        'Personalización avanzada de la carta',
+        'Soporte prioritario',
       ],
+      footnote:
+        'Límites: hasta 500 productos y 60 categorías. IA: cuota mensual incluida.',
+      ctaLabel: 'Elegir Pro',
     },
     {
       name: 'Premium',
       price: annualBilling ? '€249' : '€289',
       periodLabel: annualBilling ? '/mes (fact. anual)' : '/mes',
-      description: 'Para volumen y operaciones: rendimiento + control.',
-      credits: annualBilling ? '6.500' : '6.000',
+      description: 'Para máximo rendimiento y equipos exigentes.',
       highlighted: false,
       items: [
-        'Todo lo de Pro',
-        'Estilo de marca avanzado (tipos, colores, layout)',
-        'Generación masiva de imágenes IA (catálogo)',
-        'Flujos para reducir desperdicio (rotación sugerida)',
-        'Exportables para campañas y promos',
-        'Soporte premium + onboarding',
+        'Incluye todo lo del Pro, más:',
+        'IA avanzada (cuota alta o ilimitada)',
+        'Mayor capacidad de catálogo',
+        'Prioridad en nuevas funcionalidades',
+        'Soporte preferente',
       ],
+      footnote:
+        'Límites: hasta 2000 productos y 200 categorías. IA: cuota alta / ilimitada (según configuración).',
+      ctaLabel: 'Pasar a Premium',
     },
   ]
 
@@ -204,7 +211,10 @@ export default function App() {
             </span>
             <span className="text-sm font-semibold tracking-tight text-slate-900">
               NeuroCarta
-              <span className="text-[#0A66C2]">.AI</span>
+              <span className="text-[#0A66C2]">.ai</span>
+              <span className="align-super text-[10px] text-slate-500" aria-label="marca registrada">
+                ®
+              </span>
             </span>
           </a>
 
@@ -255,7 +265,7 @@ export default function App() {
               desperdicio, con IA
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-600">
-              NeuroCarta.AI transforma tu menú en un motor de ventas: mejora
+              NeuroCarta.ai® transforma tu menú en un motor de ventas: mejora
               descripciones, crea imágenes consistentes y prioriza productos por
               margen y rotación para vender más con menos waste.
             </p>
@@ -534,7 +544,7 @@ export default function App() {
                 La solución: IA aplicada a tu carta, plato a plato
               </h2>
               <p className="mt-4 text-lg text-white/70">
-                NeuroCarta.AI analiza tu oferta y te propone mejoras para vender
+                NeuroCarta.ai® analiza tu oferta y te propone mejoras para vender
                 más y desperdiciar menos: copy que convence, imágenes que abren
                 el apetito y destacados que empujan el margen.
               </p>
@@ -795,81 +805,18 @@ export default function App() {
             Precios
           </p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
-            Precios simples, con créditos IA incluidos
+            3 planes para tu carta digital
           </h2>
           <p className="mt-3 max-w-2xl text-lg text-slate-600">
-            Elige tu plan según volumen y frecuencia de optimización. Los
-            créditos IA se usan para imágenes, descripciones y mejoras
-            continuas.
+            Empieza con lo esencial y sube de nivel cuando necesites más
+            catálogo, multi-idioma e IA.
           </p>
         </div>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {pricing.map((p) => (
-            <PricingCard
-              key={p.name}
-              {...p}
-              ctaLabel={p.name === 'Premium' ? 'Pedir demo Premium' : 'Ver demo'}
-            />
+            <PricingCard key={p.name} {...p} />
           ))}
-        </div>
-
-        <div className="mt-8 grid gap-5 lg:grid-cols-2">
-          <div className="rounded-md border border-slate-200 bg-[#eef3f8] p-6 text-sm text-slate-700">
-            <div className="font-semibold text-slate-900">Cómo se usan los créditos IA</div>
-            <div className="mt-2 text-slate-600">
-              Se consumen al generar imágenes, reescribir descripciones y ejecutar
-              optimizaciones avanzadas (destacados, upselling y sugerencias).
-            </div>
-            <ul className="mt-4 space-y-2 text-sm text-slate-700">
-              <li className="flex gap-3">
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#0A66C2]" />
-                Imágenes IA (por plato / variantes)
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#0A66C2]" />
-                Descripciones inteligentes (iteraciones por conversión)
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#42B72A]" />
-                Sugerencias para rotación y reducción de desperdicio
-              </li>
-            </ul>
-          </div>
-
-          <div className="rounded-md border border-slate-200 bg-white p-6 text-sm shadow-sm">
-            <div className="font-semibold text-slate-900">Add-ons (packs de créditos)</div>
-            <div className="mt-2 text-slate-600">
-              Para picos de trabajo (cambio de carta, nueva temporada o sesión de
-              imágenes IA).
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {[
-                { name: 'Pack S', credits: '1.000', price: '€19' },
-                { name: 'Pack M', credits: '5.000', price: '€79' },
-                { name: 'Pack L', credits: '12.000', price: '€149' },
-              ].map((x) => (
-                <div
-                  key={x.name}
-                  className="rounded-md border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300"
-                >
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    {x.name}
-                  </div>
-                  <div className="mt-1 text-base font-semibold text-slate-900">
-                    {x.credits}
-                  </div>
-                  <div className="mt-1 text-sm text-slate-600">créditos IA</div>
-                  <div className="mt-3 text-sm font-semibold text-slate-900">
-                    {x.price}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <a href="#cta" className={cx(btnPrimary, 'mt-5 w-full')}>
-              Hablar con ventas
-            </a>
-          </div>
         </div>
       </section>
 
@@ -977,7 +924,7 @@ export default function App() {
                 Pasa de “tener carta” a “tener una carta que vende”
               </h2>
               <p className="mt-4 text-lg text-white/70">
-                En 15 minutos te enseñamos cómo NeuroCarta.AI puede aumentar tu
+                En 15 minutos te enseñamos cómo NeuroCarta.ai® puede aumentar tu
                 ticket medio y reducir desperdicio sin complicarte la vida.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -1026,7 +973,12 @@ export default function App() {
       <footer className="border-t border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-slate-600 sm:px-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="font-semibold text-[#0A66C2]">NeuroCarta.AI</span>{' '}
+            <span className="font-semibold text-[#0A66C2]">
+              NeuroCarta<span className="text-[#0A66C2]">.ai</span>
+              <span className="align-super text-[10px] text-slate-500" aria-label="marca registrada">
+                ®
+              </span>
+            </span>{' '}
             <span className="text-slate-500">
               · Smart restaurant menu powered by AI
             </span>

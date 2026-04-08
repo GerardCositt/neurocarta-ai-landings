@@ -9,6 +9,10 @@ body {
   height: 100%;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
-  @apply bg-[#0F0F0F] text-white antialiased;
+  @apply bg-[#0F0F0F] text-white antialiased overflow-x-hidden;
 }

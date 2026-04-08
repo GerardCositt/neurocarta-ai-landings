@@ -1,10 +1,21 @@
-# NeuroCarta.ai — landings de prueba
+# NeuroCarta.ai® — landings
 
-Dos variantes en React + Vite + Tailwind:
+Repositorio de landings en React + Vite + Tailwind.
 
 | Carpeta | Enfoque |
 |---------|---------|
-| `neurocarta-landing/` | Estilo claro, azul tipo producto corporativo |
-| `neurocarta-conversion/` | Estilo oscuro CRO (rojo / naranja / amarillo) |
+| `neurocarta-conversion/` | **ACTIVA (única en uso)** |
+| `neurocarta-landing/` | Archivada / desechada (ver `neurocarta-landing/ARCHIVED.md`) |
+| `neurocarta-premium/` | Archivada / desechada (ver `neurocarta-premium/ARCHIVED.md`) |
 
-En cada carpeta: `npm install` (si hace falta) y `npm run dev`.
+## Ejecutar (solo `neurocarta-conversion`)
+
+```bash
+cd neurocarta-conversion
+npm install
+npm run dev
+```
+
+### Skills (opcional)
+
+- GSAP skills (para animaciones): ver `docs/skills-gsap.md`.
