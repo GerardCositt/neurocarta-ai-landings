@@ -15,9 +15,9 @@ const heroHeadlineClass =
 const typeT2Class =
   'text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl sm:leading-snug'
 
-/** T4 — cuerpo destacado (un escalón por encima de T5 / body 16px · text-base) */
+/** T4 — cuerpo destacado (20px · text-xl; se nota frente a T5 / 16px) */
 const typeT4Class =
-  'text-lg font-medium leading-relaxed text-white/90 sm:text-xl sm:leading-relaxed'
+  'text-xl font-medium leading-relaxed text-white/90'
 
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
