@@ -66,6 +66,29 @@ function ProblemPainIcon() {
   )
 }
 
+/** Icono en tarjetas “Mensajes clave” — mismo encaje que ProblemPainIcon, tono positivo (dorado) */
+function MessageKeyIcon() {
+  return (
+    <span
+      className="mt-0.5 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#FFC107]/15 shadow-[0_0_0_1px_rgba(255,193,7,0.35)]"
+      aria-hidden="true"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="h-5 w-5 text-[#FFC107]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M5 13l4 4L19 7" />
+      </svg>
+    </span>
+  )
+}
+
 const red = 'bg-[#C52439] hover:bg-[#a01d2e] text-white shadow-lg shadow-[#C52439]/25'
 const orange =
   'bg-[#FF7A00] hover:bg-[#e56e00] text-white shadow-lg shadow-[#FF7A00]/20'
@@ -736,31 +759,41 @@ export default function App() {
         </ul>
       </section>
 
-      {/* Mensajes clave — una columna, ritmo amplio (evita sensación “amontonada”) */}
-      <section ref={messagesRef} className="border-y border-white/10 bg-[#141414] px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 sm:gap-12">
-          {[
-            'Convierte clientes indecisos en pedidos.',
-            'Vende lo que te interesa, no lo que el cliente elige al azar.',
-            'Reduce mermas automáticamente.',
-            'No es una carta bonita. Es una máquina de conversión.',
-            'Varios idiomas en carta: el turista entiende el plato y el precio — y tú cierras pedido sin improvisar.',
-          ].map((msg, idx) => {
-            const isLeft = idx % 2 === 0
-            return (
-            <blockquote
-              key={msg}
-              className={cx(
-                'anim-msg w-full max-w-[min(100%,34rem)] rounded-xl bg-white/[0.04] py-5 text-xl font-semibold leading-relaxed text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] sm:py-6 sm:text-2xl sm:leading-relaxed',
-                isLeft
-                  ? 'self-start border-l-4 border-[#FFC107] pl-6 pr-5 text-left sm:pl-7 sm:pr-6'
-                  : 'self-end border-r-4 border-[#FFC107] pl-5 pr-6 text-right sm:pl-6 sm:pr-7'
-              )}
-            >
-              {msg}
-            </blockquote>
-            )
-          })}
+      {/* Mensajes clave — misma rejilla que tarjetas “problema” (sm: 2 col) + fila 3 solo 5.ª a la izq */}
+      <section
+        ref={messagesRef}
+        id="mensajes-clave"
+        className="border-y border-white/10 bg-black px-4 py-16 sm:px-6 sm:py-20"
+      >
+        <div className="mx-auto max-w-5xl">
+          <p className="text-center text-xs font-black uppercase tracking-[0.28em] text-[#FFC107]">
+            Mensajes clave
+          </p>
+          <ul className="anim-messages-grid mx-auto mt-10 grid list-none grid-cols-1 gap-5 sm:grid-cols-2 sm:grid-rows-3">
+            {[
+              'Convierte clientes indecisos en pedidos.',
+              'Vende lo que te interesa, no lo que el cliente elige al azar.',
+              'Reduce mermas automáticamente.',
+              'No es una carta bonita. Es una máquina de conversión.',
+              'Varios idiomas en carta: el turista entiende el plato y el precio — y tú cierras pedido sin improvisar.',
+            ].map((msg, idx) => (
+              <li
+                key={msg}
+                className={cx(
+                  'anim-msg flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-5 text-left shadow-[0_0_0_1px_rgba(255,193,7,0.2)]',
+                  typeT4Class,
+                  idx === 0 && 'sm:col-start-1 sm:row-start-1',
+                  idx === 1 && 'sm:col-start-2 sm:row-start-1',
+                  idx === 2 && 'sm:col-start-1 sm:row-start-2',
+                  idx === 3 && 'sm:col-start-2 sm:row-start-2',
+                  idx === 4 && 'sm:col-start-1 sm:row-start-3'
+                )}
+              >
+                <MessageKeyIcon />
+                <span className="min-w-0 flex-1">{msg}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
