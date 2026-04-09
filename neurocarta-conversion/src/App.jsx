@@ -1023,7 +1023,7 @@ export default function App() {
             },
             {
               t: 'Carta multilingüe',
-              d: 'Traducciones que ordenan la oferta en varios idiomas: el cliente lee con claridad — especialmente turismo — y tú evitas tiempos muertos en mesa.',
+              d: 'Traducciones que ordenan la oferta en varios idiomas: el cliente lee con claridad y tú evitas tiempos muertos en mesa.',
               c: 'text-[#5eead4]',
             },
           ].map((b) => (
