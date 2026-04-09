@@ -1254,8 +1254,8 @@ export default function App() {
             </a>
           </div>
           <Micro>
-            Sin compromiso · Te respondemos en menos de 24h · Si no vendes más
-            idea, no seguimos hablando
+            Sin compromiso · Te respondemos en menos de 24h · Si no vendes más,
+            no seguimos hablando
           </Micro>
         </div>
       </section>
