@@ -763,7 +763,7 @@ export default function App() {
           <span className={sectionAccentTitleLineClass}>Mira la diferencia.</span>
           <span className={sectionAccentTitleGoldClass}>Sin rodeos.</span>
         </h2>
-        <p className="mx-auto mt-2 max-w-xl text-center text-white/65">
+        <p className="mx-auto mt-3 max-w-2xl text-center text-xl font-semibold leading-snug text-white/80 sm:mt-4 sm:text-2xl sm:leading-snug">
           No explicamos. Enseñamos.
         </p>
 
