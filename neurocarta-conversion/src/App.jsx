@@ -762,15 +762,15 @@ export default function App() {
         </ul>
       </section>
 
-      {/* Titular beneficio ticket + tarjetas (chispas deseo) — misma rejilla que problema */}
+      {/* Titular “Esto es lo que pasará” + tarjetas — misma rejilla que problema */}
       <section
         ref={messagesRef}
         id="mensajes-clave"
         className="border-y border-white/10 bg-black px-4 py-16 sm:px-6 sm:py-20"
       >
         <div className="mx-auto max-w-5xl">
-          <p className="mx-auto max-w-xl text-balance text-center text-xs font-black uppercase leading-snug tracking-[0.2em] text-[#FFC107] sm:text-sm sm:tracking-[0.18em]">
-            Lo que vas a notar en el ticket
+          <p className="mx-auto max-w-3xl text-balance text-center text-lg font-black uppercase leading-tight tracking-[0.12em] text-[#FFC107] sm:text-2xl sm:leading-snug sm:tracking-[0.1em]">
+            Esto es lo que pasará
           </p>
           <ul className="anim-messages-grid mx-auto mt-10 grid list-none grid-cols-1 gap-5 sm:grid-cols-2 sm:grid-rows-3">
             {[
@@ -783,8 +783,7 @@ export default function App() {
               <li
                 key={msg}
                 className={cx(
-                  'anim-msg flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-5 text-left shadow-[0_0_0_1px_rgba(255,193,7,0.2)]',
-                  typeT4Class,
+                  'anim-msg flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-5 text-left text-[19px] font-medium leading-relaxed text-white/90 shadow-[0_0_0_1px_rgba(255,193,7,0.2)] sm:p-6 sm:text-[21px] sm:leading-relaxed',
                   idx === 0 && 'sm:col-start-1 sm:row-start-1',
                   idx === 1 && 'sm:col-start-2 sm:row-start-1',
                   idx === 2 && 'sm:col-start-1 sm:row-start-2',
