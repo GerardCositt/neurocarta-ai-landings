@@ -649,8 +649,8 @@ export default function App() {
             Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
-          <p className="anim-hero-brand mt-3 text-center text-base font-bold tracking-tight sm:text-lg">
-            <BrandName />
+          <p className="anim-hero-brand mt-3 text-center text-2xl font-bold tracking-tight sm:text-3xl">
+            <BrandName regSizeClass="text-xs sm:text-sm" />
           </p>
         </div>
       </section>
