@@ -15,6 +15,10 @@ const heroHeadlineClass =
 const typeT2Class =
   'text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl sm:leading-snug'
 
+/** T4 — cuerpo destacado (un escalón por encima de T5 / body 16px · text-base) */
+const typeT4Class =
+  'text-lg font-medium leading-relaxed text-white/90 sm:text-xl sm:leading-relaxed'
+
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
@@ -673,7 +677,10 @@ export default function App() {
           ].map((t) => (
             <li
               key={t}
-              className="anim-problem-card flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-5 text-left text-base font-medium leading-relaxed text-white/90 shadow-[0_0_0_1px_rgba(197,36,57,0.18)] sm:text-[17px]"
+              className={cx(
+                'anim-problem-card flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-5 text-left shadow-[0_0_0_1px_rgba(197,36,57,0.18)]',
+                typeT4Class
+              )}
             >
               <span
                 className="mt-0.5 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full bg-[#C52439]/15 text-sm font-black text-[#ff4d63]"
