@@ -8,12 +8,12 @@ gsap.registerPlugin(ScrollTrigger)
 const cx = (...c) => c.filter(Boolean).join(' ')
 
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
-function BrandName({ regClassName = 'text-white/70' }) {
+function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
     <>
       NeuroCarta<span className="text-[#FFC107]">.ai</span>
       <span
-        className={cx('align-super text-[10px]', regClassName)}
+        className={cx('align-super', regSizeClass, regClassName)}
         aria-label="marca registrada"
       >
         ®
@@ -607,8 +607,8 @@ export default function App() {
             Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
-          <p className="anim-micro mt-2 text-center text-lg font-bold leading-relaxed text-white/90 sm:text-xl">
-            <BrandName regClassName="text-white/70" />
+          <p className="anim-micro mt-3 text-center text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]">
+            <BrandName regClassName="text-white/70" regSizeClass="text-sm sm:text-base" />
           </p>
         </div>
       </section>
