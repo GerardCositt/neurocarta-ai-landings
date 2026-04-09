@@ -1268,7 +1268,7 @@ export default function App() {
         <div className="text-base font-bold tracking-tight sm:text-lg">
           <BrandName />
         </div>
-        <p className="mx-auto mt-2 max-w-xl text-base font-medium leading-relaxed text-white/65 sm:mt-3 sm:text-lg">
+        <p className="mx-auto mt-2 max-w-4xl text-balance text-base font-bold tracking-tight leading-snug text-white/80 sm:mt-3 sm:text-lg sm:leading-snug">
           Carta que vende · No es información, es conversión
         </p>
       </footer>
