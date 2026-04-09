@@ -1027,9 +1027,9 @@ export default function App() {
 
       {/* 6. CÓMO FUNCIONA */}
       <section ref={stepsRef} className="px-4 py-16 sm:px-6 sm:py-20">
-        <h2 className="anim-steps-title text-center text-3xl font-bold sm:text-4xl">
+        <h3 className="anim-steps-title text-center text-3xl font-bold sm:text-4xl">
           Cómo funciona (sin humo)
-        </h2>
+        </h3>
         <div className="anim-steps-grid mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-3">
           {[
             {
@@ -1052,7 +1052,7 @@ export default function App() {
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FFC107] text-3xl font-black text-[#0F0F0F]">
                 {s.n}
               </div>
-              <h3 className="mt-5 text-xl font-black text-white">{s.t}</h3>
+              <h4 className="mt-5 text-xl font-black text-white">{s.t}</h4>
               <p className="mt-2 text-base leading-relaxed text-white/65">{s.d}</p>
             </div>
           ))}
