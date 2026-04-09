@@ -302,14 +302,14 @@ export default function App() {
             scrollTrigger: statTrigger,
           })
 
-          const obj180 = { val: 0 }
-          const el180 = statsRef.current?.querySelector('.stat-180')
-          gsap.to(obj180, {
-            val: 180,
+          const obj18 = { val: 0 }
+          const el18 = statsRef.current?.querySelector('.stat-18')
+          gsap.to(obj18, {
+            val: 18,
             ease: 'none',
             duration: isMobile ? 0.6 : undefined,
             onUpdate: () => {
-              if (el180) el180.textContent = '+' + Math.round(obj180.val)
+              if (el18) el18.textContent = '+' + Math.round(obj18.val)
             },
             scrollTrigger: statTrigger,
           })
@@ -618,7 +618,7 @@ export default function App() {
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-8 text-center sm:flex-row sm:gap-16">
           <div className="anim-stat">
             <div className="text-3xl font-black text-[#FFC107] sm:text-4xl">
-              <span className="stat-180">+180</span>
+              <span className="stat-18">+18</span>
             </div>
             <div className="mt-1 text-sm text-white/70">
               restaurantes ya venden más con <BrandName regClassName="text-white/55" />
