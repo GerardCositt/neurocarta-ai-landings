@@ -759,8 +759,9 @@ export default function App() {
 
       {/* 4. DEMO VISUAL antes / después */}
       <section ref={demoRef} id="demo" className="scroll-mt-24 overflow-x-hidden px-4 pb-16 sm:px-6 sm:pb-20">
-        <h2 className="anim-demo-title text-center text-2xl font-bold sm:text-3xl">
-          Mira la diferencia. Sin rodeos.
+        <h2 className="anim-demo-title text-center text-balance">
+          <span className={sectionAccentTitleLineClass}>Mira la diferencia.</span>
+          <span className={sectionAccentTitleGoldClass}>Sin rodeos.</span>
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-center text-white/65">
           No explicamos. Enseñamos.
