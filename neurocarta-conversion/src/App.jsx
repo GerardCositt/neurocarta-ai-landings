@@ -649,8 +649,10 @@ export default function App() {
             Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
-          <p className="anim-hero-brand mt-3 text-center text-2xl font-bold tracking-tight sm:text-3xl">
-            <BrandName regSizeClass="text-xs sm:text-sm" />
+          <p className={cx('anim-hero-brand mt-3 text-center', heroHeadlineClass)}>
+            <span className="inline-block w-full max-w-full text-inherit">
+              <BrandName regClassName="text-white/70" regSizeClass="text-sm sm:text-base" />
+            </span>
           </p>
         </div>
       </section>
