@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -166,17 +166,68 @@ export default function App() {
 
   const [openItem, setOpenItem] = useState(null)
 
+  // En móvil (cambios de viewport por barra de dirección/orientación) los triggers pueden desalinearse.
+  // Refrescamos ScrollTrigger de forma barata y segura.
+  useEffect(() => {
+    let raf = 0
+    const refresh = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => ScrollTrigger.refresh())
+    }
+
+    // tras carga inicial + cuando cargan imágenes
+    refresh()
+    window.addEventListener('load', refresh, { passive: true })
+    window.addEventListener('resize', refresh, { passive: true })
+    window.addEventListener('orientationchange', refresh, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('load', refresh)
+      window.removeEventListener('resize', refresh)
+      window.removeEventListener('orientationchange', refresh)
+    }
+  }, [])
+
   /* ──────────────────────────────────────────────────────────────
-     HERO — timeline al cargar (sin matchMedia, siempre corre)
+     HERO — timeline al cargar (en móvil / reduce-motion: sin animación)
   ────────────────────────────────────────────────────────────── */
   useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    tl.from('.anim-banner',   { y: -30,  opacity: 0, duration: 0.2 })
-      .from('.anim-badge',    { y: -15,  opacity: 0, duration: 0.18 }, '+=0.02')
-      .from('.anim-h1',       { y: 50,   opacity: 0, duration: 0.28, skewY: 3 }, '+=0.02')
-      .from('.anim-subtitle', { y: 25,   opacity: 0, duration: 0.22 }, '+=0.02')
-      .from('.anim-cta-wrap', { y: 20,   opacity: 0, duration: 0.2  }, '+=0.02')
-      .from('.anim-micro',    { opacity: 0, duration: 0.18 }, '+=0.02')
+    const mm = gsap.matchMedia()
+
+    mm.add(
+      {
+        isDesktop: '(min-width: 768px)',
+        isMobile: '(max-width: 767px)',
+        reduceMotion: '(prefers-reduced-motion: reduce)',
+      },
+      (context) => {
+        const { isMobile, reduceMotion } = context.conditions
+        const targets = [
+          '.anim-banner',
+          '.anim-badge',
+          '.anim-h1',
+          '.anim-subtitle',
+          '.anim-cta-wrap',
+          '.anim-micro',
+        ]
+
+        if (isMobile || reduceMotion) {
+          gsap.set(targets, { opacity: 1, clearProps: 'transform' })
+          return
+        }
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+        tl.from('.anim-banner',   { y: -30,  opacity: 0, duration: 0.2 })
+          .from('.anim-badge',    { y: -15,  opacity: 0, duration: 0.18 }, '+=0.02')
+          .from('.anim-h1',       { y: 50,   opacity: 0, duration: 0.28, skewY: 3 }, '+=0.02')
+          .from('.anim-subtitle', { y: 25,   opacity: 0, duration: 0.22 }, '+=0.02')
+          .from('.anim-cta-wrap', { y: 20,   opacity: 0, duration: 0.2  }, '+=0.02')
+          .from('.anim-micro',    { opacity: 0, duration: 0.18 }, '+=0.02')
+      }
+    )
+
+    return () => mm.revert()
   }, { scope: heroRef })
 
   /* ──────────────────────────────────────────────────────────────
@@ -194,9 +245,36 @@ export default function App() {
       },
       (context) => {
         const { isDesktop, isMobile, reduceMotion } = context.conditions
-        const makeScrollTrigger = (trigger) => {
-          if (reduceMotion) return null
 
+        // En móvil priorizamos legibilidad y estabilidad: sin dependencias del scroll para “ver” el contenido.
+        if (isMobile || reduceMotion) {
+          gsap.set(
+            [
+              '.anim-stat',
+              '.anim-problem-title',
+              '.anim-problem-card',
+              '.anim-msg',
+              '.anim-solution-h2',
+              '.anim-solution-p',
+              '.anim-demo-title',
+              '.anim-before',
+              '.anim-after',
+              '.anim-benefit-title',
+              '.anim-benefit-card',
+              '.anim-steps-title',
+              '.anim-step',
+              '.anim-pricing-title',
+              '.anim-plan',
+              '.anim-cta-h2',
+              '.anim-cta-p',
+              '.anim-cta-btn',
+            ],
+            { opacity: 1, clearProps: 'transform' }
+          )
+          return
+        }
+
+        const makeScrollTrigger = (trigger) => {
           return isDesktop
             ? {
                 trigger,
@@ -687,7 +765,7 @@ export default function App() {
                     key={it.name}
                     className={cx(
                       'group overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm transition',
-                      'hover:-translate-y-1 hover:border-black/20',
+                      '[@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:border-black/20',
                       'hover:shadow-[0_24px_60px_-18px_rgba(0,0,0,0.55),0_0_0_2px_rgba(197,36,57,0.18)]'
                     )}
                   >
@@ -701,13 +779,13 @@ export default function App() {
                         <img
                           src={it.imageSrc}
                           alt={it.name}
-                          className="h-[118px] w-[118px] flex-none object-cover transition duration-300 group-hover:scale-[1.06]"
+                          className="h-[118px] w-[118px] flex-none object-cover transition duration-300 [@media(hover:hover)]:group-hover:scale-[1.06]"
                           loading="lazy"
                         />
                       ) : (
                         <div
                           className={cx(
-                            'h-[118px] w-[118px] flex-none bg-gradient-to-br transition duration-300 group-hover:scale-[1.06]',
+                            'h-[118px] w-[118px] flex-none bg-gradient-to-br transition duration-300 [@media(hover:hover)]:group-hover:scale-[1.06]',
                             it.imageTone
                           )}
                           aria-hidden="true"
