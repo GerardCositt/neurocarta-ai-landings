@@ -733,10 +733,14 @@ export default function App() {
             'Vende lo que te interesa, no lo que el cliente elige al azar.',
             'Reduce mermas automáticamente.',
             'No es una carta bonita. Es una máquina de conversión.',
-          ].map((msg) => (
+            'Varios idiomas en carta: el turista entiende el plato y el precio — y tú cierras pedido sin improvisar.',
+          ].map((msg, idx, arr) => (
             <blockquote
               key={msg}
-              className="anim-msg border-l-4 border-[#FFC107] pl-4 text-xl font-semibold leading-snug text-white sm:text-2xl sm:leading-snug"
+              className={cx(
+                'anim-msg border-l-4 border-[#FFC107] pl-4 text-xl font-semibold leading-snug text-white sm:text-2xl sm:leading-snug',
+                idx === arr.length - 1 && arr.length % 2 === 1 && 'w-full max-w-2xl sm:col-span-2 sm:justify-self-center'
+              )}
             >
               {msg}
             </blockquote>
@@ -756,7 +760,9 @@ export default function App() {
           <p className="anim-solution-p mt-4 text-lg text-white/75">
             IA que destaca platos rentables, mejora textos e imágenes, y ordena
             tu oferta para que el cliente decida más rápido — y tú vendas lo
-            que te conviene.
+            que te conviene. Con traducciones en carta (plan Pro) reduces
+            fricción con turismo y extranjeros: menos “no entiendo”, más pedido
+            cerrado.
           </p>
         </div>
       </section>
@@ -996,9 +1002,9 @@ export default function App() {
       {/* 5. BENEFICIOS */}
       <section ref={benefitsRef} className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
         <h2 className="anim-benefit-title text-center text-3xl font-bold sm:text-4xl">
-          Tres golpes. Un solo objetivo: caja.
+          Cuatro palancas. Un solo objetivo: caja.
         </h2>
-        <div className="anim-benefit-grid mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
+        <div className="anim-benefit-grid mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
               t: 'Más ventas',
@@ -1014,6 +1020,11 @@ export default function App() {
               t: 'Decisión rápida',
               d: 'Menos "¿qué ponemos?". Más pedidos en menos tiempo.',
               c: 'text-[#FFC107]',
+            },
+            {
+              t: 'Carta multilingüe',
+              d: 'Traducciones que ordenan la oferta en varios idiomas: el cliente lee con claridad — especialmente turismo — y tú evitas tiempos muertos en mesa.',
+              c: 'text-[#5eead4]',
             },
           ].map((b) => (
             <div
