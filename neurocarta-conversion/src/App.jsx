@@ -68,7 +68,7 @@ const orange =
 
 function Micro({ children, className = '' }) {
   return (
-    <p className={cx('mt-2 text-center text-xs text-white/55 sm:text-sm', className)}>
+    <p className={cx('mt-2 text-center text-sm leading-relaxed text-white/60 sm:text-base', className)}>
       {children}
     </p>
   )
