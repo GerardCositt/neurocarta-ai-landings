@@ -738,21 +738,29 @@ export default function App() {
 
       {/* Mensajes clave — una columna, ritmo amplio (evita sensación “amontonada”) */}
       <section ref={messagesRef} className="border-y border-white/10 bg-[#141414] px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto flex max-w-3xl flex-col gap-10 sm:gap-12">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 sm:gap-12">
           {[
             'Convierte clientes indecisos en pedidos.',
             'Vende lo que te interesa, no lo que el cliente elige al azar.',
             'Reduce mermas automáticamente.',
             'No es una carta bonita. Es una máquina de conversión.',
             'Varios idiomas en carta: el turista entiende el plato y el precio — y tú cierras pedido sin improvisar.',
-          ].map((msg) => (
+          ].map((msg, idx) => {
+            const isLeft = idx % 2 === 0
+            return (
             <blockquote
               key={msg}
-              className="anim-msg rounded-xl border-l-4 border-[#FFC107] bg-white/[0.04] py-5 pl-6 pr-5 text-xl font-semibold leading-relaxed text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] sm:py-6 sm:pl-7 sm:pr-6 sm:text-2xl sm:leading-relaxed"
+              className={cx(
+                'anim-msg w-full max-w-[min(100%,34rem)] rounded-xl bg-white/[0.04] py-5 text-xl font-semibold leading-relaxed text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] sm:py-6 sm:text-2xl sm:leading-relaxed',
+                isLeft
+                  ? 'self-start border-l-4 border-[#FFC107] pl-6 pr-5 text-left sm:pl-7 sm:pr-6'
+                  : 'self-end border-r-4 border-[#FFC107] pl-5 pr-6 text-right sm:pl-6 sm:pr-7'
+              )}
             >
               {msg}
             </blockquote>
-          ))}
+            )
+          })}
         </div>
       </section>
 
