@@ -1016,7 +1016,9 @@ export default function App() {
               key={b.t}
               className="anim-benefit-card rounded-xl border border-white/10 bg-[#141414] p-7"
             >
-              <h3 className={cx('text-2xl font-bold', b.c)}>{b.t}</h3>
+              <h3 className={cx('text-3xl font-bold leading-tight tracking-tight sm:text-4xl', b.c)}>
+                {b.t}
+              </h3>
               <p className="mt-3 text-base leading-relaxed text-white/70">{b.d}</p>
             </div>
           ))}
