@@ -11,6 +11,10 @@ const cx = (...c) => c.filter(Boolean).join(' ')
 const heroHeadlineClass =
   'text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]'
 
+/** T2 — titular de sección (debajo del hero; mismo rango que bloques “fuertes” de la landing) */
+const typeT2Class =
+  'text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl sm:leading-snug'
+
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
@@ -656,7 +660,7 @@ export default function App() {
       {/* 2. PROBLEMA + Identificación */}
       <section ref={problemRef} id="dolor" className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="anim-problem-title text-2xl font-bold text-white sm:text-3xl">
+          <h2 className={cx('anim-problem-title', typeT2Class)}>
             Si te pasa esto… no eres tú. Es tu carta.
           </h2>
         </div>
