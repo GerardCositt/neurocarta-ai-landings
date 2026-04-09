@@ -15,6 +15,12 @@ const heroHeadlineClass =
 const typeT4Class =
   'text-[18px] font-medium leading-relaxed text-white/90'
 
+/** Titulares de sección “fuertes” (problema / solución): primera línea + promesa dorada */
+const sectionAccentTitleLineClass =
+  'block text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.08]'
+const sectionAccentTitleGoldClass =
+  'mt-3 block text-4xl font-black leading-tight tracking-tight text-[#FFC107] sm:text-6xl sm:leading-[1.05]'
+
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
@@ -687,13 +693,11 @@ export default function App() {
       <section ref={problemRef} id="dolor" className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="anim-problem-title text-balance">
-            <span className="block text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.08]">
+            <span className={sectionAccentTitleLineClass}>
               Si te pasa esto…{' '}
               <span className="font-semibold text-white/70">no eres tú.</span>
             </span>
-            <span className="mt-3 block text-4xl font-black leading-tight tracking-tight text-[#FFC107] sm:text-6xl sm:leading-[1.05]">
-              Es tu carta.
-            </span>
+            <span className={sectionAccentTitleGoldClass}>Es tu carta.</span>
           </h2>
         </div>
         <ul className="anim-problem-grid mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2">
@@ -739,9 +743,11 @@ export default function App() {
       {/* 3. SOLUCIÓN */}
       <section ref={solutionRef} className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="anim-solution-h2 text-2xl font-bold sm:text-3xl">
-            <BrandName /> no "informa".{' '}
-            <span className="text-[#FFC107]">Empuja a pedir</span>
+          <h2 className="anim-solution-h2 text-balance">
+            <span className={sectionAccentTitleLineClass}>
+              <BrandName /> no &quot;informa&quot;.
+            </span>
+            <span className={sectionAccentTitleGoldClass}>Empuja a pedir</span>
           </h2>
           <p className="anim-solution-p mt-4 text-lg text-white/75">
             IA que destaca platos rentables, mejora textos e imágenes, y ordena
