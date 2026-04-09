@@ -614,14 +614,14 @@ export default function App() {
       </header>
 
       {/* 1. HERO */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
+      <section className="relative overflow-visible px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(197,36,57,0.15),transparent)]" />
         <img
           src="/hero/travel-tag.png"
           alt=""
           width={720}
           height={326}
-          className="pointer-events-none absolute left-0 top-14 z-0 h-auto w-[min(96vw,24rem)] -rotate-[9deg] select-none opacity-95 sm:left-1 sm:top-20 sm:w-[min(94vw,32rem)] md:top-24 md:w-[min(92vw,40rem)] lg:left-2 lg:top-16 lg:w-[min(90vw,48rem)] xl:left-6 xl:top-14 xl:w-[min(88vw,56rem)]"
+          className="pointer-events-none absolute -left-24 top-14 z-0 h-auto w-[min(96vw,24rem)] -rotate-[9deg] select-none opacity-95 sm:-left-32 sm:top-20 sm:w-[min(94vw,32rem)] md:-left-40 md:top-24 md:w-[min(92vw,40rem)] lg:-left-48 lg:top-16 lg:w-[min(90vw,48rem)] xl:-left-56 xl:top-14 xl:w-[min(88vw,56rem)]"
           loading="eager"
           decoding="async"
           fetchPriority="low"
