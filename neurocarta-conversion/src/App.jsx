@@ -621,7 +621,7 @@ export default function App() {
           alt=""
           width={720}
           height={326}
-          className="pointer-events-none absolute left-0 top-16 z-0 h-auto w-[min(92vw,18rem)] -rotate-[9deg] select-none opacity-95 sm:left-2 sm:top-20 sm:w-[min(90vw,24rem)] md:top-24 md:w-[min(88vw,28rem)] lg:left-4 lg:top-16 lg:w-[min(85vw,34rem)] xl:left-8 xl:w-[min(80vw,40rem)]"
+          className="pointer-events-none absolute left-0 top-14 z-0 h-auto w-[min(96vw,24rem)] -rotate-[9deg] select-none opacity-95 sm:left-1 sm:top-20 sm:w-[min(94vw,32rem)] md:top-24 md:w-[min(92vw,40rem)] lg:left-2 lg:top-16 lg:w-[min(90vw,48rem)] xl:left-6 xl:top-14 xl:w-[min(88vw,56rem)]"
           loading="eager"
           decoding="async"
           fetchPriority="low"
