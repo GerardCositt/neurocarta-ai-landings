@@ -736,22 +736,19 @@ export default function App() {
         </ul>
       </section>
 
-      {/* Mensajes clave */}
-      <section ref={messagesRef} className="border-y border-white/10 bg-[#141414] px-4 py-12 sm:px-6">
-        <div className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2">
+      {/* Mensajes clave — una columna, ritmo amplio (evita sensación “amontonada”) */}
+      <section ref={messagesRef} className="border-y border-white/10 bg-[#141414] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto flex max-w-3xl flex-col gap-10 sm:gap-12">
           {[
             'Convierte clientes indecisos en pedidos.',
             'Vende lo que te interesa, no lo que el cliente elige al azar.',
             'Reduce mermas automáticamente.',
             'No es una carta bonita. Es una máquina de conversión.',
             'Varios idiomas en carta: el turista entiende el plato y el precio — y tú cierras pedido sin improvisar.',
-          ].map((msg, idx, arr) => (
+          ].map((msg) => (
             <blockquote
               key={msg}
-              className={cx(
-                'anim-msg border-l-4 border-[#FFC107] pl-4 text-xl font-semibold leading-snug text-white sm:text-2xl sm:leading-snug',
-                idx === arr.length - 1 && arr.length % 2 === 1 && 'w-full max-w-2xl sm:col-span-2 sm:justify-self-center'
-              )}
+              className="anim-msg rounded-xl border-l-4 border-[#FFC107] bg-white/[0.04] py-5 pl-6 pr-5 text-xl font-semibold leading-relaxed text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] sm:py-6 sm:pl-7 sm:pr-6 sm:text-2xl sm:leading-relaxed"
             >
               {msg}
             </blockquote>
