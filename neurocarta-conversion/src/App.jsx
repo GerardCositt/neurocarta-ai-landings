@@ -1265,10 +1265,10 @@ export default function App() {
       </section>
 
       <footer className="border-t border-white/10 px-4 py-8 text-center sm:px-6">
-        <div className="text-base font-bold tracking-tight sm:text-lg">
-          <BrandName />
+        <div className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <BrandName regSizeClass="text-base sm:text-lg" />
         </div>
-        <p className="mx-auto mt-2 max-w-4xl text-balance text-base font-bold tracking-tight leading-snug text-white/80 sm:mt-3 sm:text-lg sm:leading-snug">
+        <p className="mx-auto mt-3 max-w-4xl text-balance text-xl font-bold tracking-tight leading-snug text-white/80 sm:mt-4 sm:text-2xl sm:leading-snug">
           Carta que vende · No es información, es conversión
         </p>
       </footer>
