@@ -1296,7 +1296,7 @@ export default function App() {
             Deja de regalar margen a la indecisión
           </h2>
           <p className="anim-cta-p mt-4 text-lg text-white/75">
-            Cada día sin <BrandName regClassName="text-white/55" /> es dinero que no vuelve.{' '}
+            Cada día sin <BrandName regClassName="text-white/55" /> es dinero que no entra.{' '}
             <span className="text-[#FFC107]">Plazas limitadas</span> este mes.
           </p>
           <div className="anim-cta-btns mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
