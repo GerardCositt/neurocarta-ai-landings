@@ -128,8 +128,8 @@ export default function App() {
   const periodLabel = annualBilling ? '/mes (fact. anual)' : '/mes'
 
   // URLs del producto (cámbialas cuando tengas la app)
-  const LOGIN_URL = 'https://app.neurocarta.ai/login'
-  const SIGNUP_URL = 'https://app.neurocarta.ai/signup'
+  const LOGIN_URL = 'https://app.neurocarta.ai/login/'
+  const SIGNUP_URL = 'https://app.neurocarta.ai/login/'
 
   const demoItems = [
     {
