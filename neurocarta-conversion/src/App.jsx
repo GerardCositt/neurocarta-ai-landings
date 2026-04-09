@@ -574,7 +574,7 @@ export default function App() {
           <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
             No es una carta. Es una herramienta de ventas
           </p>
-          <h1 className="anim-h1 text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.1]">
+          <h1 className="anim-h1 text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]">
             Convierte tu carta en una{' '}
             <span className="text-[#FFC107]">máquina de ventas</span>
           </h1>
