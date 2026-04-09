@@ -34,6 +34,32 @@ function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]
   )
 }
 
+/** Señal de “dolor / alerta” en tarjetas problema — visible y sin usar una X */
+function ProblemPainIcon() {
+  return (
+    <span
+      className={cx(
+        'mt-0.5 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full',
+        'bg-[#C52439]/20 shadow-[0_0_0_1px_rgba(255,193,7,0.35),0_0_20px_-8px_rgba(197,36,57,0.65)]'
+      )}
+      aria-hidden="true"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="h-5 w-5 text-[#FFC107]"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.598 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </span>
+  )
+}
+
 const red = 'bg-[#C52439] hover:bg-[#a01d2e] text-white shadow-lg shadow-[#C52439]/25'
 const orange =
   'bg-[#FF7A00] hover:bg-[#e56e00] text-white shadow-lg shadow-[#FF7A00]/20'
@@ -682,12 +708,7 @@ export default function App() {
                 typeT4Class
               )}
             >
-              <span
-                className="mt-0.5 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full bg-[#C52439]/15 text-sm font-black text-[#ff4d63]"
-                aria-hidden="true"
-              >
-                ✕
-              </span>
+              <ProblemPainIcon />
               {t}
             </li>
           ))}
