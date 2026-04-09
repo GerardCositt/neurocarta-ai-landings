@@ -11,10 +11,6 @@ const cx = (...c) => c.filter(Boolean).join(' ')
 const heroHeadlineClass =
   'text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]'
 
-/** T2 — titular de sección (debajo del hero; mismo rango que bloques “fuertes” de la landing) */
-const typeT2Class =
-  'text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl sm:leading-snug'
-
 /** T4 — cuerpo destacado (18px en todos los anchos) */
 const typeT4Class =
   'text-[18px] font-medium leading-relaxed text-white/90'
@@ -690,8 +686,14 @@ export default function App() {
       {/* 2. PROBLEMA + Identificación */}
       <section ref={problemRef} id="dolor" className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className={cx('anim-problem-title', typeT2Class)}>
-            Si te pasa esto… no eres tú. Es tu carta.
+          <h2 className="anim-problem-title text-balance">
+            <span className="block text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.08]">
+              Si te pasa esto…{' '}
+              <span className="font-semibold text-white/70">no eres tú.</span>
+            </span>
+            <span className="mt-3 block text-4xl font-black leading-tight tracking-tight text-[#FFC107] sm:text-6xl sm:leading-[1.05]">
+              Es tu carta.
+            </span>
           </h2>
         </div>
         <ul className="anim-problem-grid mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2">
