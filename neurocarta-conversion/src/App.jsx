@@ -728,7 +728,7 @@ export default function App() {
           ].map((msg) => (
             <blockquote
               key={msg}
-              className="anim-msg border-l-4 border-[#FFC107] pl-4 text-[18px] font-semibold leading-relaxed text-white"
+              className="anim-msg border-l-4 border-[#FFC107] pl-4 text-xl font-semibold leading-snug text-white sm:text-2xl sm:leading-snug"
             >
               {msg}
             </blockquote>
