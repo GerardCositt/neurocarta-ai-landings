@@ -607,6 +607,9 @@ export default function App() {
             Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
+          <p className="anim-micro mt-2 text-center text-lg font-bold leading-relaxed text-white/90 sm:text-xl">
+            <BrandName regClassName="text-white/70" />
+          </p>
         </div>
       </section>
 
