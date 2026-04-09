@@ -7,6 +7,9 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cx = (...c) => c.filter(Boolean).join(' ')
 
+/** Prueba social (dato ficticio en copy): número de restaurantes mostrado en la barra de stats */
+const STAT_RESTAURANTES_NUMERO = 120
+
 /** Titular principal del hero */
 const heroHeadlineClass =
   'text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]'
@@ -66,24 +69,24 @@ function ProblemPainIcon() {
   )
 }
 
-/** Icono en tarjetas “Mensajes clave” — mismo encaje que ProblemPainIcon, tono positivo (dorado) */
-function MessageKeyIcon() {
+/** Icono “deseo / premium” en tarjetas bajo el titular — chispas + halo (no check genérico) */
+function MessageDesireIcon() {
   return (
     <span
-      className="mt-0.5 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#FFC107]/15 shadow-[0_0_0_1px_rgba(255,193,7,0.35)]"
+      className="relative mt-0.5 inline-flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gradient-to-br from-[#FFC107]/35 via-[#FFC107]/10 to-[#FF7A00]/15 shadow-[0_0_0_1px_rgba(255,193,7,0.45),0_0_22px_-6px_rgba(255,193,7,0.55)]"
       aria-hidden="true"
     >
       <svg
         viewBox="0 0 24 24"
         className="h-5 w-5 text-[#FFC107]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M5 13l4 4L19 7" />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+        />
       </svg>
     </span>
   )
@@ -371,14 +374,14 @@ export default function App() {
             scrollTrigger: statTrigger,
           })
 
-          const obj18 = { val: 0 }
-          const el18 = statsRef.current?.querySelector('.stat-18')
-          gsap.to(obj18, {
-            val: 18,
+          const objR = { val: 0 }
+          const elR = statsRef.current?.querySelector('.stat-restaurantes')
+          gsap.to(objR, {
+            val: STAT_RESTAURANTES_NUMERO,
             ease: 'none',
             duration: isMobile ? 0.6 : undefined,
             onUpdate: () => {
-              if (el18) el18.textContent = '+' + Math.round(obj18.val)
+              if (elR) elR.textContent = '+' + Math.round(objR.val)
             },
             scrollTrigger: statTrigger,
           })
@@ -700,7 +703,7 @@ export default function App() {
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-8 text-center sm:flex-row sm:gap-16">
           <div className="anim-stat">
             <div className="text-3xl font-black text-[#FFC107] sm:text-4xl">
-              <span className="stat-18">+18</span>
+              <span className="stat-restaurantes">+{STAT_RESTAURANTES_NUMERO}</span>
             </div>
             <div className="mt-1 text-sm text-white/70">
               restaurantes ya venden más con <BrandName regClassName="text-white/55" />
@@ -759,15 +762,15 @@ export default function App() {
         </ul>
       </section>
 
-      {/* Mensajes clave — misma rejilla que tarjetas “problema” (sm: 2 col) + fila 3 solo 5.ª a la izq */}
+      {/* Titular beneficio ticket + tarjetas (chispas deseo) — misma rejilla que problema */}
       <section
         ref={messagesRef}
         id="mensajes-clave"
         className="border-y border-white/10 bg-black px-4 py-16 sm:px-6 sm:py-20"
       >
         <div className="mx-auto max-w-5xl">
-          <p className="text-center text-xs font-black uppercase tracking-[0.28em] text-[#FFC107]">
-            Mensajes clave
+          <p className="mx-auto max-w-xl text-balance text-center text-xs font-black uppercase leading-snug tracking-[0.2em] text-[#FFC107] sm:text-sm sm:tracking-[0.18em]">
+            Lo que vas a notar en el ticket
           </p>
           <ul className="anim-messages-grid mx-auto mt-10 grid list-none grid-cols-1 gap-5 sm:grid-cols-2 sm:grid-rows-3">
             {[
@@ -789,7 +792,7 @@ export default function App() {
                   idx === 4 && 'sm:col-start-1 sm:row-start-3'
                 )}
               >
-                <MessageKeyIcon />
+                <MessageDesireIcon />
                 <span className="min-w-0 flex-1">{msg}</span>
               </li>
             ))}
