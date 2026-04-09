@@ -1261,8 +1261,8 @@ export default function App() {
       </section>
 
       <footer className="border-t border-white/10 px-4 py-8 text-center sm:px-6">
-        <div className="text-sm text-white/50 sm:text-base">
-          <BrandName regClassName="text-white/45" />
+        <div className="text-base font-bold tracking-tight sm:text-lg">
+          <BrandName />
         </div>
         <p className="mx-auto mt-2 max-w-xl text-base font-medium leading-relaxed text-white/65 sm:mt-3 sm:text-lg">
           Carta que vende · No es información, es conversión
