@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <title>NeuroCarta.ai</title>
-  <rect width="64" height="64" rx="14" fill="#0F0F0F" />
+  <rect width="64" height="64" rx="8" fill="#0F0F0F" />
   <text
     x="50%"
     y="50%"
     dominant-baseline="central"
     text-anchor="middle"
     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
-    font-weight="800"
-    font-size="24"
-    letter-spacing="-0.03em"
+    font-weight="900"
+    font-size="52"
+    letter-spacing="-0.08em"
     fill="#FFC107"
   >
     .ai
