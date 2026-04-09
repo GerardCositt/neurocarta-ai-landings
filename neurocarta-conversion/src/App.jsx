@@ -7,9 +7,13 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cx = (...c) => c.filter(Boolean).join(' ')
 
-/** Misma escala tipográfica para el titular principal y la marca bajo el microcopy */
+/** Titular principal del hero */
 const heroHeadlineClass =
   'text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]'
+
+/** Marca bajo “Empieza gratis…”: un escalón por encima del H1 */
+const heroBrandBelowMicroClass =
+  'text-5xl font-bold leading-tight tracking-tight text-white sm:text-7xl sm:leading-[1.06]'
 
 /** T4 — cuerpo destacado (18px en todos los anchos) */
 const typeT4Class =
@@ -649,9 +653,9 @@ export default function App() {
             Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
-          <p className={cx('anim-hero-brand mt-3 text-center', heroHeadlineClass)}>
+          <p className={cx('anim-hero-brand mt-3 text-center', heroBrandBelowMicroClass)}>
             <span className="inline-block w-full max-w-full text-inherit">
-              <BrandName regClassName="text-white/70" regSizeClass="text-sm sm:text-base" />
+              <BrandName regClassName="text-white/70" regSizeClass="text-base sm:text-lg" />
             </span>
           </p>
         </div>
