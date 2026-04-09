@@ -616,7 +616,18 @@ export default function App() {
       {/* 1. HERO */}
       <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(197,36,57,0.15),transparent)]" />
-        <div className="relative mx-auto max-w-4xl text-center">
+        <img
+          src="/hero/travel-tag.png"
+          alt=""
+          width={720}
+          height={326}
+          className="pointer-events-none absolute left-0 top-16 z-0 h-auto w-[min(92vw,18rem)] -rotate-[9deg] select-none opacity-95 sm:left-2 sm:top-20 sm:w-[min(90vw,24rem)] md:top-24 md:w-[min(88vw,28rem)] lg:left-4 lg:top-16 lg:w-[min(85vw,34rem)] xl:left-8 xl:w-[min(80vw,40rem)]"
+          loading="eager"
+          decoding="async"
+          fetchPriority="low"
+          aria-hidden="true"
+        />
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
           <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
             No es una carta. Es una herramienta de ventas
           </p>
