@@ -575,15 +575,12 @@ export default function App() {
             No es una carta. Es una herramienta de ventas
           </p>
           <h1 className="anim-h1 text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.1]">
-            Tu carta está{' '}
-            <span className="text-[#FFC107]">perdiendo dinero</span> cada día
+            Convierte tu carta en una{' '}
+            <span className="text-[#FFC107]">máquina de ventas</span>
           </h1>
           <p className="anim-subtitle mx-auto mt-4 max-w-2xl text-lg text-white/80 sm:text-xl">
             Estás tirando comida sin darte cuenta. Tus clientes no saben qué
             pedir — y tú pierdes ventas.
-          </p>
-          <p className="anim-subtitle mx-auto mt-4 max-w-4xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl sm:leading-[1.1]">
-            <BrandName /> convierte tu carta en una máquina de ventas.
           </p>
 
           <div className="anim-cta-wrap mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
