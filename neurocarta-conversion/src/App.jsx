@@ -7,6 +7,10 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cx = (...c) => c.filter(Boolean).join(' ')
 
+/** Misma escala tipográfica para el titular principal y la marca bajo el microcopy */
+const heroHeadlineClass =
+  'text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]'
+
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
@@ -210,6 +214,7 @@ export default function App() {
           '.anim-subtitle',
           '.anim-cta-wrap',
           '.anim-micro',
+          '.anim-hero-brand',
         ]
 
         if (isMobile || reduceMotion) {
@@ -223,7 +228,8 @@ export default function App() {
           .from('.anim-h1',       { y: 50,   opacity: 0, duration: 0.28, skewY: 3 }, '+=0.02')
           .from('.anim-subtitle', { y: 25,   opacity: 0, duration: 0.22 }, '+=0.02')
           .from('.anim-cta-wrap', { y: 20,   opacity: 0, duration: 0.2  }, '+=0.02')
-          .from('.anim-micro',    { opacity: 0, duration: 0.18 }, '+=0.02')
+          .from('.anim-micro',       { opacity: 0, duration: 0.18 }, '+=0.02')
+          .from('.anim-hero-brand',  { opacity: 0, y: 16, duration: 0.2 }, '+=0.02')
       }
     )
 
@@ -574,7 +580,7 @@ export default function App() {
           <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
             No es una carta. Es una herramienta de ventas
           </p>
-          <h1 className="anim-h1 text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]">
+          <h1 className={cx('anim-h1', heroHeadlineClass)}>
             Convierte tu carta en una{' '}
             <span className="text-[#FFC107]">máquina de ventas</span>
           </h1>
@@ -607,8 +613,10 @@ export default function App() {
             Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
-          <p className="anim-micro mt-3 text-center text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl sm:leading-[1.08]">
-            <BrandName regClassName="text-white/70" regSizeClass="text-sm sm:text-base" />
+          <p className={cx('anim-hero-brand mt-3 text-center', heroHeadlineClass)}>
+            <span className="inline-block w-full max-w-full text-inherit">
+              <BrandName regClassName="text-white/70" regSizeClass="text-sm sm:text-base" />
+            </span>
           </p>
         </div>
       </section>
