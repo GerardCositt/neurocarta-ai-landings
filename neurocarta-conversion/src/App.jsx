@@ -3,6 +3,8 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+gsap.registerPlugin(ScrollTrigger)
+
 const cx = (...c) => c.filter(Boolean).join(' ')
 
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
@@ -178,164 +180,276 @@ export default function App() {
   }, { scope: heroRef })
 
   /* ──────────────────────────────────────────────────────────────
-     STATS — scrub: los números suben pegados al scroll
+     SCROLL ANIMATIONS — desktop conserva scrub; móvil usa
+     entradas más cortas y sin desplazamientos agresivos
   ────────────────────────────────────────────────────────────── */
   useGSAP(() => {
-    gsap.from('.anim-stat', {
-      y: 120, opacity: 0, scale: 0.6,
-      stagger: 0.3,
-      ease: 'back.out(2)',
-      scrollTrigger: {
-        trigger: statsRef.current,
-        start: 'top 90%',
-        end: 'top 72%',
-        scrub: 0.15,
+    const mm = gsap.matchMedia()
+
+    mm.add(
+      {
+        isDesktop: '(min-width: 768px)',
+        isMobile: '(max-width: 767px)',
+        reduceMotion: '(prefers-reduced-motion: reduce)',
       },
-    })
-    // Contadores
-    const obj180 = { val: 0 }
-    const el180  = statsRef.current.querySelector('.stat-180')
-    gsap.to(obj180, {
-      val: 180, ease: 'none',
-      onUpdate: () => { if (el180) el180.textContent = '+' + Math.round(obj180.val) },
-      scrollTrigger: { trigger: statsRef.current, start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    const obj30 = { val: 0 }
-    const el30  = statsRef.current.querySelector('.stat-30')
-    gsap.to(obj30, {
-      val: 30, ease: 'none',
-      onUpdate: () => { if (el30) el30.textContent = '+' + Math.round(obj30.val) + '%' },
-      scrollTrigger: { trigger: statsRef.current, start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: statsRef })
+      (context) => {
+        const { isDesktop, isMobile, reduceMotion } = context.conditions
+        const makeScrollTrigger = (trigger) => {
+          if (reduceMotion) return null
 
-  /* ──────────────────────────────────────────────────────────────
-     PROBLEMA — cards suben pegadas al scroll
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-problem-title', {
-      y: 80, opacity: 0,
-      scrollTrigger: { trigger: '.anim-problem-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-problem-card', {
-      y: 150, opacity: 0, scale: 0.85,
-      stagger: 0.15,
-      scrollTrigger: { trigger: '.anim-problem-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: problemRef })
+          return isDesktop
+            ? {
+                trigger,
+                start: 'top 90%',
+                end: 'top 72%',
+                scrub: 0.15,
+              }
+            : {
+                trigger,
+                start: 'top 92%',
+                toggleActions: 'play none none none',
+                once: true,
+              }
+        }
 
-  /* ──────────────────────────────────────────────────────────────
-     MENSAJES CLAVE — vienen de la izquierda con scrub
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-msg', {
-      x: -200, opacity: 0,
-      stagger: 0.12,
-      scrollTrigger: { trigger: messagesRef.current, start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: messagesRef })
+        const statTrigger = makeScrollTrigger(statsRef.current)
+        if (statTrigger) {
+          gsap.from('.anim-stat', {
+            y: isDesktop ? 120 : 32,
+            opacity: 0,
+            scale: isDesktop ? 0.6 : 0.96,
+            stagger: isDesktop ? 0.3 : 0.12,
+            ease: isDesktop ? 'back.out(2)' : 'power2.out',
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: statTrigger,
+          })
 
-  /* ──────────────────────────────────────────────────────────────
-     SOLUCIÓN — scrub con skew
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-solution-h2', {
-      y: 100, opacity: 0, skewY: 4,
-      scrollTrigger: { trigger: '.anim-solution-h2', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-solution-p', {
-      y: 80, opacity: 0,
-      scrollTrigger: { trigger: '.anim-solution-p', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: solutionRef })
+          const obj180 = { val: 0 }
+          const el180 = statsRef.current?.querySelector('.stat-180')
+          gsap.to(obj180, {
+            val: 180,
+            ease: 'none',
+            duration: isMobile ? 0.6 : undefined,
+            onUpdate: () => {
+              if (el180) el180.textContent = '+' + Math.round(obj180.val)
+            },
+            scrollTrigger: statTrigger,
+          })
 
-  /* ──────────────────────────────────────────────────────────────
-     DEMO — antes/después entran desde lados opuestos con scrub
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-demo-title', {
-      y: 80, opacity: 0,
-      scrollTrigger: { trigger: '.anim-demo-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-before', {
-      x: -250, opacity: 0,
-      scrollTrigger: { trigger: '.anim-demo-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-after', {
-      x: 250, opacity: 0,
-      scrollTrigger: { trigger: '.anim-demo-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: demoRef })
+          const obj30 = { val: 0 }
+          const el30 = statsRef.current?.querySelector('.stat-30')
+          gsap.to(obj30, {
+            val: 30,
+            ease: 'none',
+            duration: isMobile ? 0.6 : undefined,
+            onUpdate: () => {
+              if (el30) el30.textContent = '+' + Math.round(obj30.val) + '%'
+            },
+            scrollTrigger: statTrigger,
+          })
+        }
 
-  /* ──────────────────────────────────────────────────────────────
-     BENEFICIOS — estallan desde abajo con scrub
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-benefit-title', {
-      y: 80, opacity: 0,
-      scrollTrigger: { trigger: '.anim-benefit-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-benefit-card', {
-      y: 180, opacity: 0, scale: 0.75,
-      stagger: 0.15,
-      scrollTrigger: { trigger: '.anim-benefit-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: benefitsRef })
+        const problemTitleTrigger = makeScrollTrigger('.anim-problem-title')
+        if (problemTitleTrigger) {
+          gsap.from('.anim-problem-title', {
+            y: isDesktop ? 80 : 28,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: problemTitleTrigger,
+          })
+        }
 
-  /* ──────────────────────────────────────────────────────────────
-     PASOS — cascada con scrub
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-steps-title', {
-      y: 80, opacity: 0,
-      scrollTrigger: { trigger: '.anim-steps-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-step', {
-      y: 150, opacity: 0, scale: 0.8,
-      stagger: 0.15,
-      scrollTrigger: { trigger: '.anim-steps-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: stepsRef })
+        const problemCardTrigger = makeScrollTrigger('.anim-problem-grid')
+        if (problemCardTrigger) {
+          gsap.from('.anim-problem-card', {
+            y: isDesktop ? 150 : 36,
+            opacity: 0,
+            scale: isDesktop ? 0.85 : 0.98,
+            stagger: isDesktop ? 0.15 : 0.08,
+            duration: isMobile ? 0.45 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: problemCardTrigger,
+          })
+        }
 
-  /* ──────────────────────────────────────────────────────────────
-     PRICING — planes suben con scrub
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-pricing-title', {
-      y: 80, opacity: 0,
-      scrollTrigger: { trigger: '.anim-pricing-title', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-plan', {
-      y: 200, opacity: 0, scale: 0.8,
-      stagger: 0.12,
-      scrollTrigger: { trigger: '.anim-pricing-grid', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-  }, { scope: pricingRef })
+        const messagesTrigger = makeScrollTrigger(messagesRef.current)
+        if (messagesTrigger) {
+          gsap.from('.anim-msg', {
+            x: isDesktop ? -200 : 0,
+            y: isMobile ? 24 : 0,
+            opacity: 0,
+            stagger: isDesktop ? 0.12 : 0.08,
+            duration: isMobile ? 0.4 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: messagesTrigger,
+          })
+        }
 
-  /* ──────────────────────────────────────────────────────────────
-     CTA FINAL — headline + botones con scrub + glow pulsante
-  ────────────────────────────────────────────────────────────── */
-  useGSAP(() => {
-    gsap.from('.anim-cta-h2', {
-      y: 100, opacity: 0, skewY: 3,
-      scrollTrigger: { trigger: '.anim-cta-h2', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-cta-p', {
-      y: 60, opacity: 0,
-      scrollTrigger: { trigger: '.anim-cta-h2', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    gsap.from('.anim-cta-btn', {
-      y: 80, opacity: 0, scale: 0.6,
-      stagger: 0.1,
-      scrollTrigger: { trigger: '.anim-cta-btns', start: 'top 90%', end: 'top 72%', scrub: 0.15 },
-    })
-    // Glow pulsante — este sí corre en tiempo real (no scrub)
-    gsap.to('.anim-cta-primary', {
-      boxShadow: '0 0 50px 14px rgba(197,36,57,0.7)',
-      repeat: -1, yoyo: true, duration: 1.6, ease: 'sine.inOut',
-      scrollTrigger: { trigger: '.anim-cta-btns', start: 'top 80%' },
-    })
-  }, { scope: ctaRef })
+        const solutionTitleTrigger = makeScrollTrigger('.anim-solution-h2')
+        if (solutionTitleTrigger) {
+          gsap.from('.anim-solution-h2', {
+            y: isDesktop ? 100 : 30,
+            opacity: 0,
+            skewY: isDesktop ? 4 : 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: solutionTitleTrigger,
+          })
+        }
+
+        const solutionTextTrigger = makeScrollTrigger('.anim-solution-p')
+        if (solutionTextTrigger) {
+          gsap.from('.anim-solution-p', {
+            y: isDesktop ? 80 : 24,
+            opacity: 0,
+            duration: isMobile ? 0.4 : undefined,
+            scrollTrigger: solutionTextTrigger,
+          })
+        }
+
+        const demoTitleTrigger = makeScrollTrigger('.anim-demo-title')
+        if (demoTitleTrigger) {
+          gsap.from('.anim-demo-title', {
+            y: isDesktop ? 80 : 28,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: demoTitleTrigger,
+          })
+        }
+
+        const demoGridTrigger = makeScrollTrigger('.anim-demo-grid')
+        if (demoGridTrigger) {
+          gsap.from('.anim-before', {
+            x: isDesktop ? -250 : 0,
+            y: isMobile ? 28 : 0,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: demoGridTrigger,
+          })
+          gsap.from('.anim-after', {
+            x: isDesktop ? 250 : 0,
+            y: isMobile ? 28 : 0,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: demoGridTrigger,
+          })
+        }
+
+        const benefitsTitleTrigger = makeScrollTrigger('.anim-benefit-title')
+        if (benefitsTitleTrigger) {
+          gsap.from('.anim-benefit-title', {
+            y: isDesktop ? 80 : 28,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: benefitsTitleTrigger,
+          })
+        }
+
+        const benefitsGridTrigger = makeScrollTrigger('.anim-benefit-grid')
+        if (benefitsGridTrigger) {
+          gsap.from('.anim-benefit-card', {
+            y: isDesktop ? 180 : 36,
+            opacity: 0,
+            scale: isDesktop ? 0.75 : 0.98,
+            stagger: isDesktop ? 0.15 : 0.08,
+            duration: isMobile ? 0.45 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: benefitsGridTrigger,
+          })
+        }
+
+        const stepsTitleTrigger = makeScrollTrigger('.anim-steps-title')
+        if (stepsTitleTrigger) {
+          gsap.from('.anim-steps-title', {
+            y: isDesktop ? 80 : 28,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: stepsTitleTrigger,
+          })
+        }
+
+        const stepsGridTrigger = makeScrollTrigger('.anim-steps-grid')
+        if (stepsGridTrigger) {
+          gsap.from('.anim-step', {
+            y: isDesktop ? 150 : 34,
+            opacity: 0,
+            scale: isDesktop ? 0.8 : 0.98,
+            stagger: isDesktop ? 0.15 : 0.08,
+            duration: isMobile ? 0.45 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: stepsGridTrigger,
+          })
+        }
+
+        const pricingTitleTrigger = makeScrollTrigger('.anim-pricing-title')
+        if (pricingTitleTrigger) {
+          gsap.from('.anim-pricing-title', {
+            y: isDesktop ? 80 : 28,
+            opacity: 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: pricingTitleTrigger,
+          })
+        }
+
+        const pricingGridTrigger = makeScrollTrigger('.anim-pricing-grid')
+        if (pricingGridTrigger) {
+          gsap.from('.anim-plan', {
+            y: isDesktop ? 200 : 36,
+            opacity: 0,
+            scale: isDesktop ? 0.8 : 0.98,
+            stagger: isDesktop ? 0.12 : 0.08,
+            duration: isMobile ? 0.45 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: pricingGridTrigger,
+          })
+        }
+
+        const ctaTitleTrigger = makeScrollTrigger('.anim-cta-h2')
+        if (ctaTitleTrigger) {
+          gsap.from('.anim-cta-h2', {
+            y: isDesktop ? 100 : 30,
+            opacity: 0,
+            skewY: isDesktop ? 3 : 0,
+            duration: isMobile ? 0.45 : undefined,
+            scrollTrigger: ctaTitleTrigger,
+          })
+          gsap.from('.anim-cta-p', {
+            y: isDesktop ? 60 : 24,
+            opacity: 0,
+            duration: isMobile ? 0.4 : undefined,
+            scrollTrigger: ctaTitleTrigger,
+          })
+        }
+
+        const ctaButtonsTrigger = makeScrollTrigger('.anim-cta-btns')
+        if (ctaButtonsTrigger) {
+          gsap.from('.anim-cta-btn', {
+            y: isDesktop ? 80 : 24,
+            opacity: 0,
+            scale: isDesktop ? 0.6 : 0.98,
+            stagger: isDesktop ? 0.1 : 0.08,
+            duration: isMobile ? 0.4 : undefined,
+            ease: isMobile ? 'power2.out' : undefined,
+            scrollTrigger: ctaButtonsTrigger,
+          })
+        }
+
+        if (!reduceMotion && isDesktop) {
+          gsap.to('.anim-cta-primary', {
+            boxShadow: '0 0 50px 14px rgba(197,36,57,0.7)',
+            repeat: -1,
+            yoyo: true,
+            duration: 1.6,
+            ease: 'sine.inOut',
+            scrollTrigger: { trigger: '.anim-cta-btns', start: 'top 80%' },
+          })
+        }
+      }
+    )
+
+    return () => mm.revert()
+  })
 
   /* ──────────────────────────────────────────────────────────────
      JSX — estructura idéntica al original, solo se añaden refs y
