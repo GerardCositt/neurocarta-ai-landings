@@ -603,8 +603,8 @@ export default function App() {
               Ver el antes y el después
             </a>
           </div>
-          <p className="anim-micro mt-5 text-center text-base font-medium leading-relaxed text-white/70 sm:text-lg">
-            Empieza gratis en 2 minutos · Sin compromiso · Resultados desde el
+          <p className="anim-micro mt-5 text-center text-lg font-medium leading-relaxed text-white/70 sm:text-xl">
+            Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
             primer día
           </p>
         </div>
