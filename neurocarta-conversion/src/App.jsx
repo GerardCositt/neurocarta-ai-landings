@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useAutoRegister } from './hooks/useAutoRegister'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -199,9 +200,9 @@ export default function App() {
   const pricePremium = annualBilling ? '€249' : '€289'
   const periodLabel = annualBilling ? '/mes (fact. anual)' : '/mes'
 
-  // URLs del producto (cámbialas cuando tengas la app)
-  const LOGIN_URL = 'https://app.neurocarta.ai/login/'
-  const SIGNUP_URL = 'https://app.neurocarta.ai/login/'
+  // URLs del producto
+  const LOGIN_URL = 'https://neurocarta-staging.onrender.com/login'
+  const SIGNUP_URL = 'https://neurocarta-staging.onrender.com/login'
 
   const demoItems = [
     {
@@ -235,6 +236,25 @@ export default function App() {
   ]
 
   const [openItem, setOpenItem] = useState(null)
+  const { status: registerStatus, error: registerError, triggerAutoRegister } = useAutoRegister()
+
+  async function handleAutoRegister(event, fallbackHref) {
+    if (event) {
+      event.preventDefault()
+    }
+
+    try {
+      await triggerAutoRegister()
+
+      if (typeof window !== 'undefined') {
+        window.location.href = fallbackHref
+      }
+    } catch {
+      if (typeof window !== 'undefined') {
+        window.location.href = fallbackHref
+      }
+    }
+  }
 
   // En móvil (cambios de viewport por barra de dirección/orientación) los triggers pueden desalinearse.
   // Refrescamos ScrollTrigger de forma barata y segura.
@@ -628,6 +648,7 @@ export default function App() {
             </a>
             <a
               href={SIGNUP_URL}
+              onClick={(event) => handleAutoRegister(event, SIGNUP_URL)}
               className={cx(
                 'rounded-md px-3 py-2 text-xs font-black transition sm:px-4 sm:text-sm',
                 red
@@ -1302,6 +1323,7 @@ export default function App() {
           <div className="anim-cta-btns mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
               href="mailto:hola@neurocarta.ai?subject=Demo%20NeuroCarta.ai%C2%AE"
+              onClick={(event) => handleAutoRegister(event, SIGNUP_URL)}
               className={cx(
                 'anim-cta-btn anim-cta-primary inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
                 red
@@ -1311,6 +1333,7 @@ export default function App() {
             </a>
             <a
               href="mailto:hola@neurocarta.ai?subject=Quiero%20vender%20más"
+              onClick={(event) => handleAutoRegister(event, SIGNUP_URL)}
               className={cx(
                 'anim-cta-btn inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
                 orange
@@ -1323,6 +1346,14 @@ export default function App() {
             Sin compromiso · Te respondemos en menos de 24h · Si no vendes más,
             no seguimos hablando
           </Micro>
+          {registerStatus === 'loading' ? (
+            <Micro className="text-[#FFC107]">Estamos preparando tu acceso automaticamente...</Micro>
+          ) : null}
+          {registerStatus === 'error' && registerError ? (
+            <Micro className="text-[#ff9aa6]">
+              No pudimos crear el acceso automatico. Te redirigiremos igualmente.
+            </Micro>
+          ) : null}
         </div>
       </section>
 
