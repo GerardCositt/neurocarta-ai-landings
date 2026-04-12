@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useAutoRegister } from './hooks/useAutoRegister'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -200,9 +199,9 @@ export default function App() {
   const pricePremium = annualBilling ? '€249' : '€289'
   const periodLabel = annualBilling ? '/mes (fact. anual)' : '/mes'
 
-  // URLs del producto
+  // URLs del producto (cámbialas cuando tengas la app)
   const LOGIN_URL = 'https://neurocarta-staging.onrender.com/login'
-  const SIGNUP_URL = 'https://neurocarta-staging.onrender.com/login'
+  const SIGNUP_URL = 'https://neurocarta-staging.onrender.com/register'
 
   const demoItems = [
     {
@@ -236,25 +235,6 @@ export default function App() {
   ]
 
   const [openItem, setOpenItem] = useState(null)
-  const { status: registerStatus, error: registerError, triggerAutoRegister } = useAutoRegister()
-
-  async function handleAutoRegister(event, fallbackHref) {
-    if (event) {
-      event.preventDefault()
-    }
-
-    try {
-      await triggerAutoRegister()
-
-      if (typeof window !== 'undefined') {
-        window.location.href = fallbackHref
-      }
-    } catch {
-      if (typeof window !== 'undefined') {
-        window.location.href = fallbackHref
-      }
-    }
-  }
 
   // En móvil (cambios de viewport por barra de dirección/orientación) los triggers pueden desalinearse.
   // Refrescamos ScrollTrigger de forma barata y segura.
@@ -648,7 +628,6 @@ export default function App() {
             </a>
             <a
               href={SIGNUP_URL}
-              onClick={(event) => handleAutoRegister(event, SIGNUP_URL)}
               className={cx(
                 'rounded-md px-3 py-2 text-xs font-black transition sm:px-4 sm:text-sm',
                 red
@@ -1161,7 +1140,7 @@ export default function App() {
             Elige cómo quieres dominar la carta
           </h2>
 
-          <div className="anim-pricing-grid mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="anim-pricing-grid mt-12 grid gap-6 lg:grid-cols-4">
             {/* PREMIUM — ancla */}
             <div className="anim-plan order-1 flex flex-col rounded-xl border border-white/15 bg-[#1a1a1a] p-7 lg:order-1">
               <div className="text-xs font-black uppercase tracking-widest text-[#FFC107]">
@@ -1203,7 +1182,7 @@ export default function App() {
             </div>
 
             {/* PRO — popular */}
-            <div className="anim-plan order-2 relative flex flex-col rounded-xl border-2 border-[#C52439] bg-[#141414] p-7 shadow-[0_0_50px_-15px_rgba(197,36,57,0.5)] lg:order-2 lg:-mt-4 lg:mb-4">
+            <div className="anim-plan order-2 relative flex flex-col rounded-xl border-2 border-[#C52439] bg-[#141414] p-7 shadow-[0_0_50px_-15px_rgba(197,36,57,0.5)] lg:order-2">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#C52439] px-4 py-1 text-xs font-black uppercase text-white">
                 Más popular
               </div>
@@ -1282,6 +1261,44 @@ export default function App() {
                 Empezar con Básico
               </a>
             </div>
+
+            {/* TRIAL — gratis */}
+            <div className="anim-plan order-4 flex flex-col rounded-xl border border-[#FFC107]/40 bg-[#1a1a1a] p-7 lg:order-4">
+              <div className="flex items-center gap-2">
+                <div className="text-xs font-black uppercase tracking-widest text-[#FFC107]">
+                  Trial
+                </div>
+                <span className="rounded-full bg-[#FFC107] px-2 py-0.5 text-[10px] font-black uppercase text-[#0F0F0F]">
+                  7 días gratis
+                </span>
+              </div>
+              <div className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
+                0€
+              </div>
+              <div className="mt-1 pb-1 text-sm font-semibold text-white/55">
+                Sin tarjeta
+              </div>
+              <p className="mt-2 text-sm text-white/55">
+                Pruébalo sin riesgo. Acceso total durante 7 días.
+              </p>
+              <ul className="mt-4 flex-1 space-y-2 text-sm text-white/70">
+                <li>✓ Acceso total sin límites</li>
+                <li>✓ IA + traducciones incluidas</li>
+                <li>✓ Soporte incluido</li>
+              </ul>
+              <p className="mt-4 text-xs text-white/40">
+                Sin compromiso · Sin tarjeta · Cancela cuando quieras
+              </p>
+              <a
+                href="#cta"
+                className={cx(
+                  'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
+                  orange
+                )}
+              >
+                Empezar gratis
+              </a>
+            </div>
           </div>
 
           {/* Franquicias */}
@@ -1322,8 +1339,7 @@ export default function App() {
           </p>
           <div className="anim-cta-btns mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
-              href="mailto:hola@neurocarta.ai?subject=Demo%20NeuroCarta.ai%C2%AE"
-              onClick={(event) => handleAutoRegister(event, SIGNUP_URL)}
+              href={SIGNUP_URL}
               className={cx(
                 'anim-cta-btn anim-cta-primary inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
                 red
@@ -1333,7 +1349,6 @@ export default function App() {
             </a>
             <a
               href="mailto:hola@neurocarta.ai?subject=Quiero%20vender%20más"
-              onClick={(event) => handleAutoRegister(event, SIGNUP_URL)}
               className={cx(
                 'anim-cta-btn inline-flex min-w-[220px] items-center justify-center rounded-md px-8 py-4 text-lg font-black transition',
                 orange
@@ -1346,14 +1361,6 @@ export default function App() {
             Sin compromiso · Te respondemos en menos de 24h · Si no vendes más,
             no seguimos hablando
           </Micro>
-          {registerStatus === 'loading' ? (
-            <Micro className="text-[#FFC107]">Estamos preparando tu acceso automaticamente...</Micro>
-          ) : null}
-          {registerStatus === 'error' && registerError ? (
-            <Micro className="text-[#ff9aa6]">
-              No pudimos crear el acceso automatico. Te redirigiremos igualmente.
-            </Micro>
-          ) : null}
         </div>
       </section>
 
