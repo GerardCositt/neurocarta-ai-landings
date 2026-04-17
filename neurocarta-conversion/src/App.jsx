@@ -199,9 +199,12 @@ export default function App() {
   const pricePremium = annualBilling ? '€249' : '€289'
   const periodLabel = annualBilling ? '/mes (fact. anual)' : '/mes'
 
-  // URLs del producto (cámbialas cuando tengas la app)
-  const LOGIN_URL = 'https://neurocarta-staging.onrender.com/login'
-  const SIGNUP_URL = 'https://neurocarta-staging.onrender.com/register'
+  const LOGIN_URL = import.meta.env.VITE_APP_URL
+    ? `${import.meta.env.VITE_APP_URL}/login`
+    : 'https://app.neurocarta.ai/login'
+  const SIGNUP_URL = import.meta.env.VITE_APP_URL
+    ? `${import.meta.env.VITE_APP_URL}/register`
+    : 'https://app.neurocarta.ai/register'
 
   const demoItems = [
     {
