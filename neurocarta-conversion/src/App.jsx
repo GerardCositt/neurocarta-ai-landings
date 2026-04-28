@@ -645,20 +645,9 @@ export default function App() {
       {/* 1. HERO */}
       <section className="relative overflow-visible px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(197,36,57,0.15),transparent)]" />
-        <img
-          src="/hero/travel-tag.png"
-          alt=""
-          width={720}
-          height={326}
-          className="pointer-events-none absolute -left-24 top-14 z-0 h-auto w-[min(96vw,24rem)] -rotate-[9deg] select-none opacity-95 sm:-left-32 sm:top-20 sm:w-[min(94vw,32rem)] md:-left-40 md:top-24 md:w-[min(92vw,40rem)] lg:-left-48 lg:top-16 lg:w-[min(90vw,48rem)] xl:-left-56 xl:top-14 xl:w-[min(88vw,56rem)]"
-          loading="eager"
-          decoding="async"
-          fetchPriority="low"
-          aria-hidden="true"
-        />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
-            No es una carta. Es una herramienta de ventas
+            La carta con IA que vende por ti
           </p>
           <h1 className={cx('anim-h1', heroHeadlineClass)}>
             Convierte tu carta en una{' '}
@@ -690,8 +679,7 @@ export default function App() {
             </a>
           </div>
           <p className="anim-micro mt-5 text-center text-lg font-medium leading-relaxed text-white/70 sm:text-xl">
-            Empieza gratis en 5 minutos · Sin compromiso · Resultados desde el
-            primer día
+            Empieza gratis · IA incluida desde el primer día · Sin compromiso
           </p>
           <p className={cx('anim-hero-brand mt-3 text-center', heroBrandBelowMicroClass)}>
             <span className="inline-block w-full max-w-full text-inherit">
