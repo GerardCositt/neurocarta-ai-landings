@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroCarta.ai® — Admin carta</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: #0f0f0f;
+        color: #fff;
+      }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 30px 20px 54px; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+      .brand { font-weight: 800; letter-spacing: -0.02em; font-size: 20px; }
+      .brand .ai { color: #ffc107; }
+      .brand sup { font-size: 11px; color: rgba(255,255,255,.65); margin-left: 1px; }
+      .actions { display: flex; align-items: center; gap: 10px; }
+      a.button,
+      button {
+        border: 1px solid rgba(255,255,255,.16);
+        background: rgba(255,255,255,.06);
+        color: #fff;
+        border-radius: 6px;
+        padding: 9px 12px;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      button.primary { border-color: #c52439; background: #c52439; }
+      h1 { margin: 34px 0 8px; font-size: 34px; line-height: 1.08; letter-spacing: -0.02em; }
+      p { margin: 0; color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.55; }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 24px;
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.04);
+        border-radius: 8px;
+        padding: 14px;
+      }
+      .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+      .tab {
+        border: 1px solid rgba(255,255,255,.14);
+        background: rgba(255,255,255,.04);
+        color: rgba(255,255,255,.82);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .tab.active { background: #ffc107; border-color: #ffc107; color: #111; }
+      .grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; margin-top: 16px; }
+      .panel {
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.04);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255,255,255,.1);
+      }
+      .panel-title { font-weight: 900; }
+      table { width: 100%; border-collapse: collapse; }
+      th,
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        color: rgba(255,255,255,.54);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      td { color: rgba(255,255,255,.86); font-size: 14px; }
+      .price { color: #ffc107; font-weight: 900; white-space: nowrap; }
+      .badge {
+        display: inline-flex;
+        border-radius: 999px;
+        background: rgba(255,193,7,.14);
+        color: #ffc107;
+        padding: 5px 8px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      form { padding: 16px; }
+      label { display: block; margin: 0 0 6px; color: rgba(255,255,255,.7); font-size: 12px; font-weight: 800; }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(255,255,255,.14);
+        background: rgba(0,0,0,.25);
+        color: #fff;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 12px;
+        outline: none;
+      }
+      textarea { min-height: 92px; resize: vertical; }
+      @media (max-width: 860px) {
+        header,
+        .toolbar { align-items: flex-start; flex-direction: column; }
+        .grid { grid-template-columns: 1fr; }
+        h1 { font-size: 29px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand">NeuroCarta<span class="ai">.ai</span><sup>®</sup></div>
+        <div class="actions">
+          <a class="button" href="/dashboard/">Panel</a>
+          <button id="logout" type="button">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <main>
+        <h1>Admin de carta</h1>
+        <p>Vista local para gestionar platos, precios, categorias y destacados antes de conectar datos reales.</p>
+
+        <section class="toolbar" aria-label="Herramientas">
+          <div class="tabs">
+            <button class="tab active" type="button">Carta</button>
+            <button class="tab" type="button">Categorias</button>
+            <button class="tab" type="button">Destacados IA</button>
+            <button class="tab" type="button">QR</button>
+          </div>
+          <button class="primary" type="button">Guardar cambios</button>
+        </section>
+
+        <section class="grid">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Platos</div>
+              <span class="badge">Demo local</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Categoria</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ensalada de la casa</td>
+                  <td>Entrantes</td>
+                  <td class="price">14,00 EUR</td>
+                  <td><span class="badge">Destacado</span></td>
+                </tr>
+                <tr>
+                  <td>Arroz meloso de mar</td>
+                  <td>Principales</td>
+                  <td class="price">21,00 EUR</td>
+                  <td>Activo</td>
+                </tr>
+                <tr>
+                  <td>Tarta cremosa de queso</td>
+                  <td>Postres</td>
+                  <td class="price">7,50 EUR</td>
+                  <td>Activo</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <aside class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Editar plato</div>
+            </div>
+            <form>
+              <label for="name">Nombre</label>
+              <input id="name" value="Ensalada de la casa" />
+
+              <label for="category">Categoria</label>
+              <select id="category">
+                <option>Entrantes</option>
+                <option>Principales</option>
+                <option>Postres</option>
+              </select>
+
+              <label for="price">Precio</label>
+              <input id="price" value="14,00" />
+
+              <label for="description">Descripcion</label>
+              <textarea id="description">Tomate de temporada con ventresca, regado con nuestra vinagreta especial.</textarea>
+
+              <button class="primary" type="button">Actualizar plato</button>
+            </form>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      if (window.localStorage.getItem('neurocarta:demo-session') !== 'active') {
+        window.location.replace('/login/');
+      }
+
+      document.querySelector('#logout').addEventListener('click', () => {
+        window.localStorage.removeItem('neurocarta:demo-session');
+        window.location.href = '/login/';
+      });
+    </script>
+  </body>
+</html>

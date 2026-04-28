@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroCarta.ai® — Panel demo</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: #0f0f0f;
+        color: #fff;
+      }
+      .wrap { max-width: 1040px; margin: 0 auto; padding: 34px 20px 56px; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+      .actions { display: flex; align-items: center; gap: 10px; }
+      .brand { font-weight: 800; letter-spacing: -0.02em; font-size: 20px; }
+      .brand .ai { color: #ffc107; }
+      .brand sup { font-size: 11px; color: rgba(255,255,255,.65); margin-left: 1px; }
+      button,
+      a.button {
+        border: 1px solid rgba(255,255,255,.16);
+        background: rgba(255,255,255,.06);
+        color: #fff;
+        border-radius: 6px;
+        padding: 9px 12px;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      a.primary {
+        border-color: #c52439;
+        background: #c52439;
+      }
+      h1 { margin: 38px 0 10px; font-size: 36px; line-height: 1.08; letter-spacing: -0.02em; }
+      p { margin: 0; color: rgba(255,255,255,.72); font-size: 16px; line-height: 1.55; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 26px; }
+      .card {
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.04);
+        border-radius: 8px;
+        padding: 18px;
+        min-height: 118px;
+      }
+      .label { color: rgba(255,255,255,.58); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+      .value { margin-top: 10px; font-size: 28px; font-weight: 900; color: #ffc107; }
+      .note { margin-top: 8px; color: rgba(255,255,255,.66); font-size: 13px; }
+      @media (max-width: 760px) {
+        header { align-items: flex-start; flex-direction: column; }
+        .grid { grid-template-columns: 1fr; }
+        h1 { font-size: 30px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand">NeuroCarta<span class="ai">.ai</span><sup>®</sup></div>
+        <div class="actions">
+          <a class="button primary" href="/admin/">Ir a admin</a>
+          <button id="logout" type="button">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <main>
+        <h1>Panel demo local</h1>
+        <p>Has entrado con la cuenta demo. Esta pantalla sirve como base local para trabajar la aplicación antes de conectar autenticación real.</p>
+
+        <section class="grid" aria-label="Resumen">
+          <article class="card">
+            <div class="label">Estado</div>
+            <div class="value">Activo</div>
+            <div class="note">Sesión demo guardada en este navegador.</div>
+          </article>
+          <article class="card">
+            <div class="label">Cuenta</div>
+            <div class="value">Demo</div>
+            <div class="note">demo@neurocarta.ai</div>
+          </article>
+          <article class="card">
+            <div class="label">Entorno</div>
+            <div class="value">Local</div>
+            <div class="note">127.0.0.1:5174</div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.get('demo') === '1') {
+        window.localStorage.setItem('neurocarta:demo-session', 'active');
+        window.history.replaceState({}, '', '/dashboard/');
+      }
+
+      if (window.localStorage.getItem('neurocarta:demo-session') !== 'active') {
+        window.location.replace('/login/');
+      }
+
+      document.querySelector('#logout').addEventListener('click', () => {
+        window.localStorage.removeItem('neurocarta:demo-session');
+        window.location.href = '/login/';
+      });
+    </script>
+  </body>
+</html>
