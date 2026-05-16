@@ -192,12 +192,12 @@ export default function App() {
   const pricingRef   = useRef(null)
   const ctaRef       = useRef(null)
 
-  // Pricing (mostrar precios + anclaje neuromarketing)
-  const annualBilling = true
-  const priceBasic = annualBilling ? '€59' : '€69'
-  const pricePro = annualBilling ? '€129' : '€149'
-  const pricePremium = annualBilling ? '€249' : '€289'
-  const periodLabel = annualBilling ? '/mes (fact. anual)' : '/mes'
+  // Pricing toggle
+  const [annualBilling, setAnnualBilling] = useState(false)
+  const priceBasic   = annualBilling ? '250€' : '25€'
+  const pricePro     = annualBilling ? '350€' : '35€'
+  const pricePremium = annualBilling ? '650€' : '65€'
+  const periodLabel  = annualBilling ? '/año' : '/mes'
 
   const LOGIN_URL = import.meta.env.VITE_APP_URL
     ? `${import.meta.env.VITE_APP_URL}/login`
@@ -1131,7 +1131,40 @@ export default function App() {
             Elige cómo quieres dominar la carta
           </h2>
 
-          <div className="anim-pricing-grid mt-12 grid gap-6 lg:grid-cols-4">
+          {/* Toggle mensual / anual */}
+          <div className="mt-8 flex justify-center">
+            <div className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] p-1">
+              <button
+                type="button"
+                onClick={() => setAnnualBilling(false)}
+                className={cx(
+                  'rounded-full px-5 py-2 text-sm font-bold transition',
+                  !annualBilling
+                    ? 'bg-white/15 text-white'
+                    : 'text-white/50 hover:text-white/75'
+                )}
+              >
+                Mensual
+              </button>
+              <button
+                type="button"
+                onClick={() => setAnnualBilling(true)}
+                className={cx(
+                  'inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-bold transition',
+                  annualBilling
+                    ? 'bg-white/15 text-white'
+                    : 'text-white/50 hover:text-white/75'
+                )}
+              >
+                Anual
+                <span className="rounded-full bg-[#FFC107]/20 px-2 py-0.5 text-[11px] font-black text-[#FFC107]">
+                  2 meses gratis
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div className="anim-pricing-grid mt-8 grid gap-6 lg:grid-cols-4">
             {/* PREMIUM — ancla */}
             <div className="anim-plan order-1 flex flex-col rounded-xl border border-white/15 bg-[#1a1a1a] p-7 lg:order-1">
               <div className="text-xs font-black uppercase tracking-widest text-[#FFC107]">
@@ -1148,6 +1181,11 @@ export default function App() {
                   {periodLabel}
                 </div>
               </div>
+              {annualBilling && (
+                <span className="mt-1 inline-block rounded-full bg-[#FFC107]/15 px-3 py-0.5 text-xs font-bold text-[#FFC107]">
+                  Paga 10 meses, disfruta 12
+                </span>
+              )}
               <p className="mt-2 text-sm text-white/55">
                 Para máximo rendimiento y equipos exigentes.
               </p>
@@ -1162,7 +1200,7 @@ export default function App() {
                 Hasta 2.000 productos y 200 categorías · IA: cuota alta / ilimitada
               </p>
               <a
-                href="#cta"
+                href={`${SIGNUP_URL}/premium`}
                 className={cx(
                   'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   orange
@@ -1191,6 +1229,11 @@ export default function App() {
                   {periodLabel}
                 </div>
               </div>
+              {annualBilling && (
+                <span className="mt-1 inline-block rounded-full bg-[#FFC107]/15 px-3 py-0.5 text-xs font-bold text-[#FFC107]">
+                  Paga 10 meses, disfruta 12
+                </span>
+              )}
               <p className="mt-2 text-sm text-white/65">
                 Para restaurantes que quieren ahorrar tiempo y vender más.
               </p>
@@ -1206,7 +1249,7 @@ export default function App() {
                 Hasta 500 productos y 60 categorías · IA: cuota mensual incluida
               </p>
               <a
-                href="#cta"
+                href={`${SIGNUP_URL}/pro`}
                 className={cx(
                   'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   red
@@ -1232,6 +1275,11 @@ export default function App() {
                   {periodLabel}
                 </div>
               </div>
+              {annualBilling && (
+                <span className="mt-1 inline-block rounded-full bg-[#FFC107]/15 px-3 py-0.5 text-xs font-bold text-[#FFC107]">
+                  Paga 10 meses, disfruta 12
+                </span>
+              )}
               <p className="mt-2 text-sm text-white/55">
                 Ideal para empezar con tu carta digital.
               </p>
@@ -1246,7 +1294,7 @@ export default function App() {
                 Hasta 100 productos y 20 categorías · Sin IA, traducciones ni importaciones avanzadas
               </p>
               <a
-                href="#cta"
+                href={`${SIGNUP_URL}/basico`}
                 className="mt-6 inline-flex w-full justify-center rounded-md border-2 border-[#FF7A00] bg-transparent py-3 text-center text-sm font-bold text-[#FF7A00] transition hover:bg-[#FF7A00] hover:text-white"
               >
                 Empezar con Básico
@@ -1281,7 +1329,7 @@ export default function App() {
                 Sin compromiso · Sin tarjeta · Cancela cuando quieras
               </p>
               <a
-                href="#cta"
+                href={`${SIGNUP_URL}/trial`}
                 className={cx(
                   'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   orange
