@@ -266,6 +266,9 @@ export default function App() {
   const SIGNUP_URL = import.meta.env.VITE_APP_URL
     ? `${import.meta.env.VITE_APP_URL}/register`
     : 'https://app.neurocarta.ai/register'
+  const ONBOARDING_ENDPOINT =
+    import.meta.env.VITE_ONBOARDING_ENDPOINT ||
+    `${import.meta.env.VITE_API_BASE_URL || 'https://app.neurocarta.ai'}/api/v1/onboarding`
 
   const demoItems = [
     {
@@ -300,7 +303,45 @@ export default function App() {
 
   const [openItem, setOpenItem] = useState(null)
   const [onboardingOpen, setOnboardingOpen] = useState(false)
+  const [onboardingStatus, setOnboardingStatus] = useState('idle')
+  const [onboardingError, setOnboardingError] = useState('')
   const onboardingAvailability = getOnboardingAvailability()
+
+  const handleOnboardingSubmit = async (event) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
+    setOnboardingStatus('submitting')
+    setOnboardingError('')
+
+    try {
+      const response = await fetch(ONBOARDING_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: String(formData.get('nombre') || '').trim(),
+          restaurant: String(formData.get('restaurante') || '').trim(),
+          email: String(formData.get('email') || '').trim(),
+          phone: String(formData.get('telefono') || '').trim(),
+          availableSpots: onboardingAvailability.label,
+          source: 'neurocarta-conversion',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo enviar la solicitud')
+      }
+
+      setOnboardingStatus('sent')
+      form.reset()
+    } catch {
+      setOnboardingStatus('error')
+      setOnboardingError('No se ha podido enviar. Escríbenos a gerard@cositt.com.')
+    }
+  }
 
   useEffect(() => {
     const scrollPricingToCenter = () => {
@@ -689,7 +730,11 @@ export default function App() {
       {/* Urgencia + escasez */}
       <button
         type="button"
-        onClick={() => setOnboardingOpen(true)}
+        onClick={() => {
+          setOnboardingStatus('idle')
+          setOnboardingError('')
+          setOnboardingOpen(true)
+        }}
         className="anim-banner block w-full border-b border-[#FFC107]/30 bg-[#FFC107] px-4 py-2 text-center text-sm font-bold text-[#0F0F0F] transition hover:bg-[#ffd45a]"
       >
         {onboardingAvailability.isOnboardingDay ? (
@@ -1171,16 +1216,9 @@ export default function App() {
             </div>
 
             <form
-              action="mailto:gerard@cositt.com?subject=Reserva%20onboarding%20guiado"
-              method="post"
-              encType="text/plain"
+              onSubmit={handleOnboardingSubmit}
               className="mt-6 space-y-4"
             >
-              <input
-                type="hidden"
-                name="plazas_disponibles"
-                value={onboardingAvailability.label}
-              />
               <label className="block">
                 <span className="text-xs font-bold uppercase tracking-widest text-white/45">
                   Nombre
@@ -1225,14 +1263,25 @@ export default function App() {
                   placeholder="+34 ..."
                 />
               </label>
+              {onboardingStatus === 'sent' ? (
+                <div className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100">
+                  Solicitud enviada. Te contactaremos pronto.
+                </div>
+              ) : null}
+              {onboardingError ? (
+                <div className="rounded-md border border-[#C52439]/40 bg-[#C52439]/15 px-4 py-3 text-sm font-semibold text-white">
+                  {onboardingError}
+                </div>
+              ) : null}
               <button
                 type="submit"
+                disabled={onboardingStatus === 'submitting' || onboardingStatus === 'sent'}
                 className={cx(
-                  'inline-flex w-full justify-center rounded-md px-5 py-3 text-sm font-black transition',
+                  'inline-flex w-full justify-center rounded-md px-5 py-3 text-sm font-black transition disabled:cursor-not-allowed disabled:opacity-60',
                   red
                 )}
               >
-                Solicitar onboarding
+                {onboardingStatus === 'submitting' ? 'Enviando...' : 'Solicitar onboarding'}
               </button>
             </form>
           </div>
@@ -1579,7 +1628,11 @@ export default function App() {
             Cada día sin <BrandName regClassName="text-white/55" /> es dinero que no entra.{' '}
             <button
               type="button"
-              onClick={() => setOnboardingOpen(true)}
+              onClick={() => {
+                setOnboardingStatus('idle')
+                setOnboardingError('')
+                setOnboardingOpen(true)
+              }}
               className="font-semibold text-[#FFC107] underline decoration-[#FFC107]/50 underline-offset-4 transition hover:text-[#ffd45a]"
             >
               Plazas limitadas

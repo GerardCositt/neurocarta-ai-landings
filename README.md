@@ -28,6 +28,11 @@ npm run deploy:plesk
 Ese comando instala dependencias de `neurocarta-conversion`, genera `dist/` y
 copia el build estático a la raíz del despliegue.
 
+Variables útiles para producción:
+
+- `VITE_ONBOARDING_ENDPOINT`: endpoint HTTPS que recibe solicitudes del formulario de onboarding.
+  Si no se define, la landing usa `https://app.neurocarta.ai/api/v1/onboarding`.
+
 ### Skills (opcional)
 
 - GSAP skills (para animaciones): ver `docs/skills-gsap.md`.
