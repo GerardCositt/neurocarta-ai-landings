@@ -31,7 +31,22 @@ copia el build estático a la raíz del despliegue.
 Variables útiles para producción:
 
 - `VITE_ONBOARDING_ENDPOINT`: endpoint HTTPS que recibe solicitudes del formulario de onboarding.
-  Si no se define, la landing usa `https://app.neurocarta.ai/api/v1/onboarding`.
+  Si no se define, la landing usa `/api/onboarding`.
+
+### Worker Cloudflare para onboarding
+
+El formulario de onboarding necesita un endpoint HTTPS. Hay un Worker preparado en:
+
+```text
+cloudflare/onboarding-worker.js
+```
+
+Configuración recomendada en Cloudflare:
+
+- Ruta: `neurocarta.ai/api/onboarding`
+- Secret: `RESEND_API_KEY`
+- Variable opcional: `RESEND_FROM` con un remitente validado en Resend
+- Variable opcional: `ONBOARDING_TO` con `gerard@cositt.com`
 
 ### Skills (opcional)
 

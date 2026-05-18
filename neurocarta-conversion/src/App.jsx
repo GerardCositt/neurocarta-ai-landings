@@ -267,8 +267,7 @@ export default function App() {
     ? `${import.meta.env.VITE_APP_URL}/register`
     : 'https://app.neurocarta.ai/register'
   const ONBOARDING_ENDPOINT =
-    import.meta.env.VITE_ONBOARDING_ENDPOINT ||
-    `${import.meta.env.VITE_API_BASE_URL || 'https://app.neurocarta.ai'}/api/v1/onboarding`
+    import.meta.env.VITE_ONBOARDING_ENDPOINT || '/api/onboarding'
 
   const demoItems = [
     {
