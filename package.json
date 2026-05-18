@@ -1,0 +1,9 @@
+{
+  "name": "neurocarta-ai-landings",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "npm --prefix neurocarta-conversion run build",
+    "deploy:plesk": "npm --prefix neurocarta-conversion ci && npm --prefix neurocarta-conversion run build && cp -R neurocarta-conversion/dist/. ."
+  }
+}
