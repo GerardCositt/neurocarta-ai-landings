@@ -149,7 +149,7 @@ function getOnboardingAvailability(now = new Date()) {
     return {
       isOnboardingDay: true,
       spots: ONBOARDING_MIN_SPOTS,
-      label: 'Onboarding guiado hoy',
+      label: 'Arranque guiado hoy',
     }
   }
 
@@ -294,7 +294,7 @@ export default function App() {
     ? `${import.meta.env.VITE_APP_URL}/register`
     : 'https://app.neurocarta.ai/register'
   const ONBOARDING_ENDPOINT =
-    import.meta.env.VITE_ONBOARDING_ENDPOINT || '/api/onboarding'
+    import.meta.env.VITE_ONBOARDING_ENDPOINT || '/api/onboarding.php'
 
   const demoItems = [
     {
@@ -780,7 +780,7 @@ export default function App() {
             <span className="underline decoration-2 underline-offset-2">
               {onboardingAvailability.label}
             </span>{' '}
-            con onboarding guiado este mes
+            con arranque guiado este mes
           </>
         )}
       </button>
@@ -1236,7 +1236,7 @@ export default function App() {
           className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 p-4 sm:items-center"
           role="dialog"
           aria-modal="true"
-          aria-label="Solicitud de onboarding guiado"
+          aria-label="Solicitud de arranque guiado"
           onClick={() => setOnboardingOpen(false)}
         >
           <div
@@ -1246,15 +1246,15 @@ export default function App() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#FFC107]">
-                  Onboarding guiado
+                  Arranque guiado
                 </p>
                 <h2 className="mt-2 text-2xl font-black leading-tight text-white">
                   Reserva tu plaza
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-white/60">
                   {onboardingAvailability.isOnboardingDay
-                    ? 'Hoy hacemos onboarding guiado. Déjanos tus datos y te contactamos.'
-                    : `Quedan ${onboardingAvailability.spots} plazas para el onboarding guiado de este mes.`}
+                    ? 'Hoy hacemos arranque guiado. Déjanos tus datos y te contactamos.'
+                    : `Quedan ${onboardingAvailability.spots} plazas para el arranque guiado de este mes.`}
                 </p>
               </div>
               <button
@@ -1333,7 +1333,7 @@ export default function App() {
                   red
                 )}
               >
-                {onboardingStatus === 'submitting' ? 'Enviando...' : 'Solicitar onboarding'}
+                {onboardingStatus === 'submitting' ? 'Enviando...' : 'Solicitar plaza'}
               </button>
             </form>
           </div>
