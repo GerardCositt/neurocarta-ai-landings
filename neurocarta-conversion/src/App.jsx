@@ -304,6 +304,10 @@ export default function App() {
   const [onboardingOpen, setOnboardingOpen] = useState(false)
   const [onboardingStatus, setOnboardingStatus] = useState('idle')
   const [onboardingError, setOnboardingError] = useState('')
+
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' })
+  const [contactStatus, setContactStatus] = useState('idle')
+  const [contactError, setContactError] = useState('')
   const onboardingAvailability = getOnboardingAvailability()
 
   const handleOnboardingSubmit = async (event) => {
@@ -771,6 +775,12 @@ export default function App() {
               className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
             >
               Planes
+            </a>
+            <a
+              href="#contacto"
+              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
+            >
+              Contacto
             </a>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -1676,6 +1686,125 @@ export default function App() {
             Sin compromiso · Te respondemos en menos de 24h · Si no vendes más,
             no seguimos hablando
           </Micro>
+        </div>
+      </section>
+
+      {/* CONTACTO */}
+      <section
+        id="contacto"
+        className="scroll-mt-24 border-t border-white/10 px-4 py-16 sm:px-6 sm:py-20"
+      >
+        <div className="mx-auto max-w-xl">
+          <p className="mb-2 text-center text-sm font-black uppercase tracking-[0.12em] text-[#FFC107]">
+            Contacto
+          </p>
+          <h2 className="mb-8 text-balance text-center text-3xl font-black leading-tight text-white sm:text-4xl">
+            ¿Hablamos?
+          </h2>
+
+          {contactStatus === 'ok' ? (
+            <div className="rounded-xl border border-[#FFC107]/30 bg-[#FFC107]/10 px-6 py-10 text-center">
+              <p className="text-2xl font-black text-white">¡Recibido! 🎉</p>
+              <p className="mt-3 text-white/70">Te respondemos en menos de 24 horas.</p>
+            </div>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault()
+                setContactStatus('sending')
+                setContactError('')
+                try {
+                  const res = await fetch('/contact.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contactForm),
+                  })
+                  const json = await res.json()
+                  if (json.ok) {
+                    setContactStatus('ok')
+                  } else {
+                    setContactStatus('error')
+                    setContactError(json.error || 'Error desconocido.')
+                  }
+                } catch {
+                  setContactStatus('error')
+                  setContactError('Error de conexión. Inténtalo de nuevo.')
+                }
+              }}
+              className="flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                    Nombre *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Tu nombre"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="tu@email.com"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                  Teléfono <span className="normal-case text-white/30">(opcional)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={contactForm.phone}
+                  onChange={(e) => setContactForm((f) => ({ ...f, phone: e.target.value }))}
+                  placeholder="+34 600 000 000"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                  Mensaje *
+                </label>
+                <textarea
+                  required
+                  rows={5}
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm((f) => ({ ...f, message: e.target.value }))}
+                  placeholder="Cuéntanos qué necesitas…"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                />
+              </div>
+              {contactError && (
+                <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                  {contactError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={contactStatus === 'sending'}
+                className={cx(
+                  'rounded-lg px-8 py-3.5 text-sm font-black transition',
+                  contactStatus === 'sending'
+                    ? 'cursor-not-allowed opacity-60 bg-[#C52439] text-white'
+                    : red
+                )}
+              >
+                {contactStatus === 'sending' ? 'Enviando…' : 'Enviar mensaje'}
+              </button>
+            </form>
+          )}
         </div>
       </section>
 
