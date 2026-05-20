@@ -172,7 +172,8 @@ $confirmHtml = <<<HTML
   <tr><td align="center">
     <table width="100%" style="max-width:580px;background:#1a1a1a;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
       <tr><td style="background:#C52439;padding:24px 32px;border-radius:12px 12px 0 0;">
-        <h1 style="margin:0;color:#fff;font-size:20px;font-weight:900;">NeuroCarta<span style="color:#FFC107;">.ai</span></h1>
+        <img src="https://neurocarta.ai/butterfly.svg" alt="" width="36" height="36" style="display:inline-block;vertical-align:middle;margin-right:10px;"/>
+        <h1 style="margin:0;display:inline;color:#fff;font-size:20px;font-weight:900;vertical-align:middle;">NeuroCarta<span style="color:#FFC107;">.ai</span></h1>
         <p style="margin:6px 0 0;color:rgba(255,255,255,0.75);font-size:13px;">Carta digital que vende</p>
       </td></tr>
       <tr><td style="padding:32px;">

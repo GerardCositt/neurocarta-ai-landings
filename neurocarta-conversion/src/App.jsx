@@ -28,6 +28,33 @@ const sectionAccentTitleLineClass =
 const sectionAccentTitleGoldClass =
   'mt-3 block text-4xl font-black leading-tight tracking-tight text-[#FFC107] sm:text-6xl sm:leading-[1.05]'
 
+/** Mascota: mariposa naranja flat */
+function ButterflyIcon({ className = '' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M48,44 C38,16 5,12 5,34 C5,54 26,62 48,60" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M52,44 C62,16 95,12 95,34 C95,54 74,62 52,60" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M48,61 C35,65 8,74 8,86 C8,95 32,92 48,72" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M52,61 C65,65 92,74 92,86 C92,95 68,92 52,72" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="30" cy="40" r="5.5" fill="#FFC107" opacity="0.55"/>
+      <circle cx="70" cy="40" r="5.5" fill="#FFC107" opacity="0.55"/>
+      <circle cx="25" cy="76" r="4" fill="#FFC107" opacity="0.4"/>
+      <circle cx="75" cy="76" r="4" fill="#FFC107" opacity="0.4"/>
+      <ellipse cx="50" cy="58" rx="3.5" ry="15" fill="#1D1D1B"/>
+      <circle cx="50" cy="42" r="3.5" fill="#1D1D1B"/>
+      <path d="M48,39 Q40,25 34,18" fill="none" stroke="#1D1D1B" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="34" cy="18" r="2.5" fill="#1D1D1B"/>
+      <path d="M52,39 Q60,25 66,18" fill="none" stroke="#1D1D1B" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="66" cy="18" r="2.5" fill="#1D1D1B"/>
+    </svg>
+  )
+}
+
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
@@ -760,7 +787,8 @@ export default function App() {
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0F0F0F]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <span className="text-base font-bold tracking-tight sm:text-lg">
+          <span className="flex items-center gap-2 text-base font-bold tracking-tight sm:text-lg">
+            <ButterflyIcon className="h-7 w-7 shrink-0" />
             <BrandName />
           </span>
           <nav className="hidden items-center gap-1 sm:flex">
@@ -807,6 +835,7 @@ export default function App() {
       <section className="relative overflow-visible px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(197,36,57,0.15),transparent)]" />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <ButterflyIcon className="mascot-hero mx-auto mb-6 h-20 w-20 sm:h-28 sm:w-28" />
           <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
             La carta con IA que vende por ti
           </p>
@@ -1809,6 +1838,7 @@ export default function App() {
       </section>
 
       <footer className="border-t border-white/10 px-4 py-8 text-center sm:px-6">
+        <ButterflyIcon className="mx-auto mb-4 h-10 w-10 opacity-80" />
         <div className="text-4xl font-bold tracking-tight sm:text-5xl">
           <BrandName regSizeClass="text-base sm:text-lg" />
         </div>
