@@ -1316,8 +1316,11 @@ export default function App() {
                 />
               </label>
               {onboardingStatus === 'sent' ? (
-                <div className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100">
-                  Solicitud enviada. Te contactaremos pronto.
+                <div className="flex items-center gap-3 overflow-hidden rounded-md border border-[#FF7A00]/35 bg-[#FF7A00]/10 px-4 py-3">
+                  <ButterflyIcon className="mascot-fly-in h-10 w-10 shrink-0" />
+                  <span className="success-text-trail text-sm font-semibold text-white/90">
+                    Solicitud enviada. Te contactaremos pronto.
+                  </span>
                 </div>
               ) : null}
               {onboardingError ? (
