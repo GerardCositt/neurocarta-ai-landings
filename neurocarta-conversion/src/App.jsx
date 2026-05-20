@@ -1267,78 +1267,86 @@ export default function App() {
               </button>
             </div>
 
-            <form
-              onSubmit={handleOnboardingSubmit}
-              className="mt-6 space-y-4"
-            >
-              <label className="block">
-                <span className="text-xs font-bold uppercase tracking-widest text-white/45">
-                  Nombre
-                </span>
-                <input
-                  name="nombre"
-                  required
-                  className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
-                  placeholder="Tu nombre"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs font-bold uppercase tracking-widest text-white/45">
-                  Restaurante
-                </span>
-                <input
-                  name="restaurante"
-                  required
-                  className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
-                  placeholder="Nombre del restaurante"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs font-bold uppercase tracking-widest text-white/45">
-                  Email
-                </span>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
-                  placeholder="tu@email.com"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs font-bold uppercase tracking-widest text-white/45">
-                  Teléfono
-                </span>
-                <input
-                  name="telefono"
-                  className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
-                  placeholder="+34 ..."
-                />
-              </label>
-              {onboardingStatus === 'sent' ? (
-                <div className="flex items-center gap-3 overflow-hidden rounded-md border border-[#FF7A00]/35 bg-[#FF7A00]/10 px-4 py-3">
-                  <ButterflyIcon className="mascot-fly-in h-10 w-10 shrink-0" />
-                  <span className="success-text-trail text-sm font-semibold text-white/90">
-                    Solicitud enviada. Te contactaremos pronto.
-                  </span>
-                </div>
-              ) : null}
-              {onboardingError ? (
-                <div className="rounded-md border border-[#C52439]/40 bg-[#C52439]/15 px-4 py-3 text-sm font-semibold text-white">
-                  {onboardingError}
-                </div>
-              ) : null}
-              <button
-                type="submit"
-                disabled={onboardingStatus === 'submitting' || onboardingStatus === 'sent'}
-                className={cx(
-                  'inline-flex w-full justify-center rounded-md px-5 py-3 text-sm font-black transition disabled:cursor-not-allowed disabled:opacity-60',
-                  red
-                )}
+            {onboardingStatus === 'sent' ? (
+              <div className="mt-8 flex flex-col items-center gap-4 py-4 text-center">
+                <ButterflyIcon className="mascot-fly-in h-16 w-16" />
+                <p className="success-text-trail text-base font-semibold text-white/90">
+                  Solicitud enviada. Te contactaremos pronto.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setOnboardingOpen(false)}
+                  className="mt-2 text-sm text-white/40 underline underline-offset-4 transition hover:text-white/70"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleOnboardingSubmit}
+                className="mt-6 space-y-4"
               >
-                {onboardingStatus === 'submitting' ? 'Enviando...' : 'Solicitar plaza'}
-              </button>
-            </form>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Nombre
+                  </span>
+                  <input
+                    name="nombre"
+                    required
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="Tu nombre"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Restaurante
+                  </span>
+                  <input
+                    name="restaurante"
+                    required
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="Nombre del restaurante"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Email
+                  </span>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="tu@email.com"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Teléfono
+                  </span>
+                  <input
+                    name="telefono"
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="+34 ..."
+                  />
+                </label>
+                {onboardingError ? (
+                  <div className="rounded-md border border-[#C52439]/40 bg-[#C52439]/15 px-4 py-3 text-sm font-semibold text-white">
+                    {onboardingError}
+                  </div>
+                ) : null}
+                <button
+                  type="submit"
+                  disabled={onboardingStatus === 'submitting'}
+                  className={cx(
+                    'inline-flex w-full justify-center rounded-md px-5 py-3 text-sm font-black transition disabled:cursor-not-allowed disabled:opacity-60',
+                    red
+                  )}
+                >
+                  {onboardingStatus === 'submitting' ? 'Enviando...' : 'Solicitar plaza'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       ) : null}
