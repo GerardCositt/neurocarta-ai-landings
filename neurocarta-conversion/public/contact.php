@@ -195,14 +195,34 @@ $confirmHtml = <<<HTML
 </body></html>
 HTML;
 
-$r1 = smtp_send($email, 'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
+$phoneStr = $phone ? "<br><strong>Teléfono:</strong> $phone" : '';
+$notifyHtml = <<<HTML
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
+<body style="font-family:Arial,sans-serif;color:#333;padding:24px;">
+  <h2 style="margin:0 0 16px;font-size:18px;">🌐 Nuevo contacto desde neurocarta.ai</h2>
+  <table style="border-collapse:collapse;width:100%;max-width:520px;">
+    <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;width:110px;">Nombre</td><td style="padding:8px 12px;border:1px solid #eee;">$name</td></tr>
+    <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;">Email</td><td style="padding:8px 12px;border:1px solid #eee;"><a href="mailto:$email">$email</a></td></tr>
+    <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;">Teléfono</td><td style="padding:8px 12px;border:1px solid #eee;">{$phone}</td></tr>
+    <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;vertical-align:top;">Mensaje</td><td style="padding:8px 12px;border:1px solid #eee;">$message</td></tr>
+  </table>
+  <p style="margin-top:20px;color:#999;font-size:12px;">Lead creado en Odoo CRM (tag: NeuroCarta.ai Web)</p>
+</body></html>
+HTML;
+
+$r1 = smtp_send($email,              'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
 $r2 = odoo_create_lead($name, $email, $phone, $message);
+$r3 = smtp_send('gerard@cositt.com', "🌐 Nuevo contacto web: $name",              $notifyHtml);
 
 if ($r1 !== true || $r2 !== true) {
     error_log('contact.php r1=' . var_export($r1, true) . ' r2=' . var_export($r2, true));
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Error al enviar. Escríbenos a hola@neurocarta.ai']);
     exit;
+}
+
+if ($r3 !== true) {
+    error_log('contact.php notify r3=' . var_export($r3, true));
 }
 
 echo json_encode(['ok' => true]);
