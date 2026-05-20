@@ -151,7 +151,7 @@ function odoo_create_lead($name, $email, $phone, $message) {
         ODOO_DB, $uid, ODOO_KEY,
         'crm.lead', 'create',
         [[
-            'name'         => "\xf0\x9f\x8c\x90 NeuroCarta.ai \xe2\x80\x94 $name",
+            'name'         => "\xf0\x9f\xa6\x8b NeuroCarta.ai \xe2\x80\x94 $name",
             'contact_name' => $name,
             'email_from'   => $email,
             'phone'        => $phone,
@@ -172,7 +172,8 @@ $confirmHtml = <<<HTML
   <tr><td align="center">
     <table width="100%" style="max-width:580px;background:#1a1a1a;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
       <tr><td style="background:#C52439;padding:24px 32px;border-radius:12px 12px 0 0;">
-        <h1 style="margin:0;color:#fff;font-size:20px;font-weight:900;">🌐 NeuroCarta<span style="color:#FFC107;">.ai</span></h1>
+        <img src="https://neurocarta.ai/butterfly.svg" alt="" width="40" height="40" style="display:block;margin-bottom:8px;"/>
+        <h1 style="margin:0;color:#fff;font-size:20px;font-weight:900;">NeuroCarta<span style="color:#FFC107;">.ai</span></h1>
         <p style="margin:6px 0 0;color:rgba(255,255,255,0.75);font-size:13px;">Carta digital que vende</p>
       </td></tr>
       <tr><td style="padding:32px;">
@@ -198,7 +199,7 @@ $phoneStr = $phone ? "<br><strong>Teléfono:</strong> $phone" : '';
 $notifyHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="font-family:Arial,sans-serif;color:#333;padding:24px;">
-  <h2 style="margin:0 0 16px;font-size:18px;">🌐 Nuevo contacto desde neurocarta.ai</h2>
+  <h2 style="margin:0 0 16px;font-size:18px;">🦋 Nuevo contacto desde neurocarta.ai</h2>
   <table style="border-collapse:collapse;width:100%;max-width:520px;">
     <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;width:110px;">Nombre</td><td style="padding:8px 12px;border:1px solid #eee;">$name</td></tr>
     <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;">Email</td><td style="padding:8px 12px;border:1px solid #eee;"><a href="mailto:$email">$email</a></td></tr>
@@ -211,7 +212,7 @@ HTML;
 
 $r1 = smtp_send($email,              'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
 $r2 = odoo_create_lead($name, $email, $phone, $message);
-$r3 = smtp_send('gerard@cositt.com', "🌐 Nuevo contacto web: $name",              $notifyHtml);
+$r3 = smtp_send('gerard@cositt.com', "🦋 Nuevo contacto web: $name",              $notifyHtml);
 
 if ($r1 !== true || $r2 !== true) {
     error_log('contact.php r1=' . var_export($r1, true) . ' r2=' . var_export($r2, true));
