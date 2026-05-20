@@ -759,6 +759,20 @@ export default function App() {
           <span className="text-base font-bold tracking-tight sm:text-lg">
             <BrandName />
           </span>
+          <nav className="hidden items-center gap-1 sm:flex">
+            <a
+              href="#demo"
+              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
+            >
+              Sin Rodeos
+            </a>
+            <a
+              href="#precios"
+              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
+            >
+              Planes
+            </a>
+          </nav>
           <div className="flex items-center gap-2 sm:gap-3">
             <a
               href={LOGIN_URL}
