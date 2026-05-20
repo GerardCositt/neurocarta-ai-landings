@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
-}
-
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['ok' => false, 'error' => 'Method not allowed']);
@@ -15,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $raw  = file_get_contents('php://input');
 $data = json_decode($raw, true) ?: $_POST;
 
-function clean($v)     { return trim(strip_tags((string)($v ?? ''))); }
-function no_hdrs($v)   { return preg_replace('/[\r\n\t]/', ' ', $v); }
+function clean($v)   { return trim(strip_tags((string)($v ?? ''))); }
+function no_hdrs($v) { return preg_replace('/[\r\n\t]/', ' ', $v); }
 
 $name    = no_hdrs(clean($data['name']    ?? ''));
 $email   = filter_var(clean($data['email'] ?? ''), FILTER_VALIDATE_EMAIL);
@@ -29,6 +25,7 @@ if (!$name || !$email || !$message) {
     exit;
 }
 
+// ===================== SMTP =====================
 define('SMTP_HOST',      'mail.neurocarta.ai');
 define('SMTP_PORT',      465);
 define('SMTP_USER',      'hola@neurocarta.ai');
@@ -37,71 +34,137 @@ define('SMTP_FROM_NAME', 'NeuroCarta.ai');
 
 function smtp_read($fp) {
     $out = '';
-    do {
-        $line = fgets($fp, 512);
-        $out .= $line;
-    } while (strlen($line) >= 4 && $line[3] === '-');
+    do { $line = fgets($fp, 512); $out .= $line; }
+    while (strlen($line) >= 4 && $line[3] === '-');
     return $out;
 }
 
-function smtp_send_email($to, $subject, $htmlBody) {
+function smtp_send($to, $subject, $html) {
     $ctx = stream_context_create(['ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
     $fp  = stream_socket_client('ssl://' . SMTP_HOST . ':' . SMTP_PORT, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $ctx);
-    if (!$fp) return "Conn fail: $errstr ($errno)";
+    if (!$fp) return "Conn: $errstr";
     stream_set_timeout($fp, 30);
 
+    $steps = [
+        ''                                    => '220',
+        "EHLO neurocarta.ai\r\n"              => '250',
+        "AUTH LOGIN\r\n"                      => '334',
+        base64_encode(SMTP_USER) . "\r\n"     => '334',
+        base64_encode(SMTP_PASS) . "\r\n"     => '235',
+        "MAIL FROM:<" . SMTP_USER . ">\r\n"   => '250',
+        "RCPT TO:<$to>\r\n"                   => '250',
+        "DATA\r\n"                            => '354',
+    ];
+    foreach ($steps as $cmd => $expect) {
+        if ($cmd) fwrite($fp, $cmd);
+        $r = smtp_read($fp);
+        if (substr($r, 0, 3) !== $expect) { fclose($fp); return "SMTP $expect: $r"; }
+    }
+
+    $enc  = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+    $body = "From: " . SMTP_FROM_NAME . " <" . SMTP_USER . ">\r\nTo: $to\r\nSubject: $enc\r\n"
+          . "MIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\nDate: " . date('r') . "\r\n\r\n"
+          . preg_replace('/^\.$/m', '..', $html) . "\r\n.\r\n";
+    fwrite($fp, $body);
     $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '220') return "Greeting: $r";
-
-    fwrite($fp, "EHLO neurocarta.ai\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '250') return "EHLO: $r";
-
-    fwrite($fp, "AUTH LOGIN\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '334') return "AUTH: $r";
-
-    fwrite($fp, base64_encode(SMTP_USER) . "\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '334') return "USER: $r";
-
-    fwrite($fp, base64_encode(SMTP_PASS) . "\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '235') return "PASS: $r";
-
-    fwrite($fp, "MAIL FROM:<" . SMTP_USER . ">\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '250') return "MAIL FROM: $r";
-
-    fwrite($fp, "RCPT TO:<$to>\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '250') return "RCPT TO: $r";
-
-    fwrite($fp, "DATA\r\n");
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '354') return "DATA: $r";
-
-    $encSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-    $msg = "From: " . SMTP_FROM_NAME . " <" . SMTP_USER . ">\r\n"
-         . "To: $to\r\n"
-         . "Subject: $encSubject\r\n"
-         . "MIME-Version: 1.0\r\n"
-         . "Content-Type: text/html; charset=UTF-8\r\n"
-         . "Date: " . date('r') . "\r\n"
-         . "\r\n"
-         . preg_replace('/^\.$/m', '..', $htmlBody)
-         . "\r\n.\r\n";
-
-    fwrite($fp, $msg);
-    $r = smtp_read($fp);
-    if (substr($r, 0, 3) !== '250') return "MSG: $r";
-
+    if (substr($r, 0, 3) !== '250') { fclose($fp); return "MSG: $r"; }
     fwrite($fp, "QUIT\r\n");
     fclose($fp);
     return true;
 }
 
-// --- Email 1: confirmación al cliente ---
+// ===================== Odoo XML-RPC =====================
+define('ODOO_URL',  'https://control.cositt.net');
+define('ODOO_DB',   'cosittnew');
+define('ODOO_USER', 'gerard@cositt.com');
+define('ODOO_KEY',  '867dcda58d6a5f1fdc1698a98149f428d3af0490');
+define('ODOO_TAG',  174); // tag "NeuroCarta.ai Web"
+
+function v2x($v) {
+    if (is_bool($v))   return '<value><boolean>' . ($v ? 1 : 0) . '</boolean></value>';
+    if (is_int($v))    return '<value><int>' . $v . '</int></value>';
+    if (is_null($v))   return '<value><boolean>0</boolean></value>';
+    if (is_string($v)) return '<value><string>' . htmlspecialchars($v, ENT_XML1 | ENT_QUOTES) . '</string></value>';
+    if (is_array($v)) {
+        $keys = array_keys($v);
+        if ($keys === range(0, count($v) - 1)) {
+            $out = '<value><array><data>';
+            foreach ($v as $i) $out .= v2x($i);
+            return $out . '</data></array></value>';
+        }
+        $out = '<value><struct>';
+        foreach ($v as $k => $i) {
+            $out .= '<member><name>' . htmlspecialchars($k, ENT_XML1) . '</name>' . v2x($i) . '</member>';
+        }
+        return $out . '</struct></value>';
+    }
+    return '<value><string>' . htmlspecialchars((string)$v, ENT_XML1) . '</string></value>';
+}
+
+function x2v($node) {
+    if (!($node instanceof SimpleXMLElement)) return null;
+    if (isset($node->int))     return (int)(string)$node->int;
+    if (isset($node->i4))      return (int)(string)$node->i4;
+    if (isset($node->i8))      return (int)(string)$node->i8;
+    if (isset($node->boolean)) return (bool)(int)(string)$node->boolean;
+    if (isset($node->string))  return (string)$node->string;
+    if (isset($node->array)) {
+        $r = [];
+        foreach ($node->array->data->value as $child) $r[] = x2v($child);
+        return $r;
+    }
+    if (isset($node->struct)) {
+        $r = [];
+        foreach ($node->struct->member as $m) $r[(string)$m->name] = x2v($m->value);
+        return $r;
+    }
+    $text = trim((string)$node);
+    return $text !== '' ? $text : null;
+}
+
+function odoo_call($path, $method, $params) {
+    $body = '<?xml version="1.0"?><methodCall><methodName>'
+          . htmlspecialchars($method, ENT_XML1)
+          . '</methodName><params>';
+    foreach ($params as $p) $body .= '<param>' . v2x($p) . '</param>';
+    $body .= '</params></methodCall>';
+
+    $ctx = stream_context_create(['http' => [
+        'method'  => 'POST',
+        'header'  => "Content-Type: text/xml\r\nContent-Length: " . strlen($body),
+        'content' => $body,
+        'timeout' => 30,
+    ]]);
+    $resp = @file_get_contents(ODOO_URL . $path, false, $ctx);
+    if (!$resp) return null;
+    $xml = @simplexml_load_string($resp);
+    if (!$xml || isset($xml->fault)) return null;
+    return x2v($xml->params->param->value);
+}
+
+function odoo_create_lead($name, $email, $phone, $message) {
+    $uid = odoo_call('/xmlrpc/2/common', 'authenticate',
+        [ODOO_DB, ODOO_USER, ODOO_KEY, []]);
+    if (!is_int($uid) || $uid < 1) return "Odoo auth failed (uid=$uid)";
+
+    $id = odoo_call('/xmlrpc/2/object', 'execute_kw', [
+        ODOO_DB, $uid, ODOO_KEY,
+        'crm.lead', 'create',
+        [[
+            'name'         => "\xf0\x9f\x8c\x90 NeuroCarta.ai \xe2\x80\x94 $name",
+            'contact_name' => $name,
+            'email_from'   => $email,
+            'phone'        => $phone,
+            'description'  => "Mensaje:\n$message",
+            'tag_ids'      => [[6, 0, [ODOO_TAG]]],
+            'team_id'      => 1,
+        ]],
+        [],
+    ]);
+    return (is_int($id) && $id > 0) ? true : "Lead failed: " . var_export($id, true);
+}
+
+// ===================== Ejecutar =====================
 $confirmHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#0F0F0F;font-family:Arial,sans-serif;">
@@ -131,26 +194,13 @@ $confirmHtml = <<<HTML
 </body></html>
 HTML;
 
-// --- Email 2: lead a Odoo CRM ---
-$phoneRow = $phone ? "<br><strong>Teléfono:</strong> {$phone}" : '';
-$leadHtml = <<<HTML
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
-<body style="font-family:Arial,sans-serif;color:#333;">
-  <p><strong>Nombre:</strong> {$name}<br>
-     <strong>Email:</strong> {$email}{$phoneRow}</p>
-  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
-  <p><strong>Mensaje:</strong><br>{$message}</p>
-  <p style="color:#999;font-size:12px;margin-top:24px;">Desde el formulario de contacto — neurocarta.ai</p>
-</body></html>
-HTML;
-
-$r1 = smtp_send_email($email,                'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
-$r2 = smtp_send_email('neurocarta@cositt.net', "Nuevo contacto web: $name",               $leadHtml);
+$r1 = smtp_send($email, 'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
+$r2 = odoo_create_lead($name, $email, $phone, $message);
 
 if ($r1 !== true || $r2 !== true) {
-    error_log('contact.php SMTP: r1=' . var_export($r1, true) . ' r2=' . var_export($r2, true));
+    error_log('contact.php r1=' . var_export($r1, true) . ' r2=' . var_export($r2, true));
     http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'Error al enviar. Escríbenos directamente a hola@neurocarta.ai']);
+    echo json_encode(['ok' => false, 'error' => 'Error al enviar. Escríbenos a hola@neurocarta.ai']);
     exit;
 }
 
