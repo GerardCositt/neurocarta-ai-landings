@@ -1183,7 +1183,7 @@ export default function App() {
               </div>
               {annualBilling && (
                 <span className="mt-1 inline-block rounded-full bg-[#FFC107]/15 px-3 py-0.5 text-xs font-bold text-[#FFC107]">
-                  Paga 10 meses, disfruta 12
+                  1 mes gratis
                 </span>
               )}
               <p className="mt-2 text-sm text-white/55">
@@ -1191,13 +1191,13 @@ export default function App() {
               </p>
               <p className="mt-1 text-xs text-white/40">Incluye todo lo del Pro, más:</p>
               <ul className="mt-4 flex-1 space-y-2 text-sm text-white/75">
-                <li>✓ IA avanzada (cuota alta o ilimitada)</li>
-                <li>✓ Mayor capacidad de catálogo</li>
+                <li>✓ IA avanzada + traducciones + CSV</li>
+                <li>✓ <strong>400 créditos IA/mes incluidos</strong></li>
                 <li>✓ Prioridad en nuevas funcionalidades</li>
                 <li>✓ Soporte preferente</li>
               </ul>
               <p className="mt-4 text-xs text-white/40">
-                Hasta 2.000 productos y 200 categorías · IA: cuota alta / ilimitada
+                Hasta 1.000 productos y 100 categorías · 3 restaurantes
               </p>
               <a
                 href={`${SIGNUP_URL}/premium`}
@@ -1231,7 +1231,7 @@ export default function App() {
               </div>
               {annualBilling && (
                 <span className="mt-1 inline-block rounded-full bg-[#FFC107]/15 px-3 py-0.5 text-xs font-bold text-[#FFC107]">
-                  Paga 10 meses, disfruta 12
+                  1 mes gratis
                 </span>
               )}
               <p className="mt-2 text-sm text-white/65">
@@ -1242,11 +1242,11 @@ export default function App() {
                 <li>✓ Traducciones (multi-idioma)</li>
                 <li>✓ Importación de productos (CSV)</li>
                 <li>✓ IA para crear/optimizar fichas</li>
-                <li>✓ Personalización avanzada de la carta</li>
-                <li>✓ Soporte prioritario</li>
+                <li>✓ <strong>200 créditos IA/mes incluidos</strong></li>
+                <li>✓ Ofertas y destacados en carta</li>
               </ul>
               <p className="mt-4 text-xs text-white/40">
-                Hasta 500 productos y 60 categorías · IA: cuota mensual incluida
+                Hasta 250 productos y 15 categorías · 2 restaurantes
               </p>
               <a
                 href={`${SIGNUP_URL}/pro`}
@@ -1277,7 +1277,7 @@ export default function App() {
               </div>
               {annualBilling && (
                 <span className="mt-1 inline-block rounded-full bg-[#FFC107]/15 px-3 py-0.5 text-xs font-bold text-[#FFC107]">
-                  Paga 10 meses, disfruta 12
+                  1 mes gratis
                 </span>
               )}
               <p className="mt-2 text-sm text-white/55">
@@ -1286,12 +1286,12 @@ export default function App() {
               <ul className="mt-4 flex-1 space-y-2 text-sm text-white/70">
                 <li>✓ Carta pública responsive (móvil y QR)</li>
                 <li>✓ Gestión de productos y categorías</li>
-                <li>✓ Ofertas y destacados</li>
                 <li>✓ Apariencia básica (logo/colores)</li>
                 <li>✓ Soporte por email</li>
+                <li style={{color:'rgba(255,255,255,.35)'}}>— Sin IA ni traducciones</li>
               </ul>
               <p className="mt-4 text-xs text-white/40">
-                Hasta 100 productos y 20 categorías · Sin IA, traducciones ni importaciones avanzadas
+                Hasta 70 productos y 6 categorías · Sin IA, traducciones ni importaciones avanzadas
               </p>
               <a
                 href={`${SIGNUP_URL}/basico`}
