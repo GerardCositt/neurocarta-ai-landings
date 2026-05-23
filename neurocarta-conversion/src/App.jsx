@@ -28,6 +28,33 @@ const sectionAccentTitleLineClass =
 const sectionAccentTitleGoldClass =
   'mt-3 block text-4xl font-black leading-tight tracking-tight text-[#FFC107] sm:text-6xl sm:leading-[1.05]'
 
+/** Mascota: mariposa naranja flat */
+function ButterflyIcon({ className = '' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M48,44 C38,16 5,12 5,34 C5,54 26,62 48,60" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M52,44 C62,16 95,12 95,34 C95,54 74,62 52,60" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M48,61 C35,65 8,74 8,86 C8,95 32,92 48,72" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M52,61 C65,65 92,74 92,86 C92,95 68,92 52,72" fill="#FF7A00" stroke="#1D1D1B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="30" cy="40" r="5.5" fill="#FFC107" opacity="0.55"/>
+      <circle cx="70" cy="40" r="5.5" fill="#FFC107" opacity="0.55"/>
+      <circle cx="25" cy="76" r="4" fill="#FFC107" opacity="0.4"/>
+      <circle cx="75" cy="76" r="4" fill="#FFC107" opacity="0.4"/>
+      <ellipse cx="50" cy="58" rx="3.5" ry="15" fill="#1D1D1B"/>
+      <circle cx="50" cy="42" r="3.5" fill="#1D1D1B"/>
+      <path d="M48,39 Q40,25 34,18" fill="none" stroke="#1D1D1B" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="34" cy="18" r="2.5" fill="#1D1D1B"/>
+      <path d="M52,39 Q60,25 66,18" fill="none" stroke="#1D1D1B" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="66" cy="18" r="2.5" fill="#1D1D1B"/>
+    </svg>
+  )
+}
+
 /** Marca en UI: NeuroCarta + .ai en dorado + ® */
 function BrandName({ regClassName = 'text-white/70', regSizeClass = 'text-[10px]' }) {
   return (
@@ -95,6 +122,67 @@ function MessageDesireIcon() {
 const red = 'bg-[#C52439] hover:bg-[#a01d2e] text-white shadow-lg shadow-[#C52439]/25'
 const orange =
   'bg-[#FF7A00] hover:bg-[#e56e00] text-white shadow-lg shadow-[#FF7A00]/20'
+
+const ONBOARDING_MAX_SPOTS = 23
+const ONBOARDING_MIN_SPOTS = 3
+
+function startOfDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+function firstMondayOfMonth(year, month) {
+  const firstDay = new Date(year, month, 1)
+  const daysUntilMonday = (8 - firstDay.getDay()) % 7
+  return new Date(year, month, 1 + daysUntilMonday)
+}
+
+function addMonths(date, months) {
+  return new Date(date.getFullYear(), date.getMonth() + months, 1)
+}
+
+function getOnboardingAvailability(now = new Date()) {
+  const today = startOfDay(now)
+  const firstMondayThisMonth = firstMondayOfMonth(today.getFullYear(), today.getMonth())
+  const isOnboardingDay = today.getTime() === firstMondayThisMonth.getTime()
+
+  if (isOnboardingDay) {
+    return {
+      isOnboardingDay: true,
+      spots: ONBOARDING_MIN_SPOTS,
+      label: 'Arranque guiado hoy',
+    }
+  }
+
+  const previousMonth = addMonths(today, -1)
+  const nextMonth = addMonths(today, 1)
+  const cycleStart =
+    today > firstMondayThisMonth
+      ? new Date(today.getFullYear(), today.getMonth(), firstMondayThisMonth.getDate() + 1)
+      : new Date(
+          previousMonth.getFullYear(),
+          previousMonth.getMonth(),
+          firstMondayOfMonth(previousMonth.getFullYear(), previousMonth.getMonth()).getDate() + 1
+        )
+  const cycleEnd =
+    today > firstMondayThisMonth
+      ? firstMondayOfMonth(nextMonth.getFullYear(), nextMonth.getMonth())
+      : firstMondayThisMonth
+
+  const dayMs = 1000 * 60 * 60 * 24
+  const totalDays = Math.max(1, Math.round((cycleEnd - cycleStart) / dayMs))
+  const elapsedDays = Math.max(0, Math.round((today - cycleStart) / dayMs))
+  const progress = Math.min(1, elapsedDays / totalDays)
+  const spots = Math.max(
+    ONBOARDING_MIN_SPOTS,
+    ONBOARDING_MAX_SPOTS - Math.floor(progress * (ONBOARDING_MAX_SPOTS - ONBOARDING_MIN_SPOTS))
+  )
+
+  return {
+    isOnboardingDay: false,
+    spots,
+    label: `${spots} plazas`,
+  }
+}
 
 function Micro({ children, className = '' }) {
   return (
@@ -194,9 +282,9 @@ export default function App() {
 
   // Pricing toggle
   const [annualBilling, setAnnualBilling] = useState(false)
-  const priceBasic   = annualBilling ? '250€' : '25€'
-  const pricePro     = annualBilling ? '350€' : '35€'
-  const pricePremium = annualBilling ? '650€' : '65€'
+  const priceBasic   = annualBilling ? '275€' : '25€'
+  const pricePro     = annualBilling ? '385€' : '35€'
+  const pricePremium = annualBilling ? '759€' : '69€'
   const periodLabel  = annualBilling ? '/año' : '/mes'
 
   const LOGIN_URL = import.meta.env.VITE_APP_URL
@@ -205,6 +293,8 @@ export default function App() {
   const SIGNUP_URL = import.meta.env.VITE_APP_URL
     ? `${import.meta.env.VITE_APP_URL}/register`
     : 'https://app.neurocarta.ai/register'
+  const ONBOARDING_ENDPOINT =
+    import.meta.env.VITE_ONBOARDING_ENDPOINT || '/api/onboarding.php'
 
   const demoItems = [
     {
@@ -238,6 +328,63 @@ export default function App() {
   ]
 
   const [openItem, setOpenItem] = useState(null)
+  const [onboardingOpen, setOnboardingOpen] = useState(false)
+  const [onboardingStatus, setOnboardingStatus] = useState('idle')
+  const [onboardingError, setOnboardingError] = useState('')
+
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' })
+  const [contactStatus, setContactStatus] = useState('idle')
+  const [contactError, setContactError] = useState('')
+  const onboardingAvailability = getOnboardingAvailability()
+
+  const handleOnboardingSubmit = async (event) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
+    setOnboardingStatus('submitting')
+    setOnboardingError('')
+
+    try {
+      const response = await fetch(ONBOARDING_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: String(formData.get('nombre') || '').trim(),
+          restaurant: String(formData.get('restaurante') || '').trim(),
+          email: String(formData.get('email') || '').trim(),
+          phone: String(formData.get('telefono') || '').trim(),
+          availableSpots: onboardingAvailability.label,
+          source: 'neurocarta-conversion',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo enviar la solicitud')
+      }
+
+      setOnboardingStatus('sent')
+      form.reset()
+    } catch {
+      setOnboardingStatus('error')
+      setOnboardingError('No se ha podido enviar. Escríbenos a gerard@cositt.com.')
+    }
+  }
+
+  useEffect(() => {
+    const scrollPricingToCenter = () => {
+      if (window.location.hash !== '#precios') return
+      requestAnimationFrame(() => {
+        pricingRef.current?.scrollIntoView({ block: 'center', inline: 'nearest' })
+      })
+    }
+
+    scrollPricingToCenter()
+    window.addEventListener('hashchange', scrollPricingToCenter)
+    return () => window.removeEventListener('hashchange', scrollPricingToCenter)
+  }, [])
 
   // En móvil (cambios de viewport por barra de dirección/orientación) los triggers pueden desalinearse.
   // Refrescamos ScrollTrigger de forma barata y segura.
@@ -611,17 +758,59 @@ export default function App() {
   return (
     <div ref={heroRef} className="min-h-screen">
       {/* Urgencia + escasez */}
-      <div className="anim-banner border-b border-[#FFC107]/30 bg-[#FFC107] px-4 py-2 text-center text-sm font-bold text-[#0F0F0F]">
-        Acceso limitado · Solo{' '}
-        <span className="underline decoration-2 underline-offset-2">23 plazas</span>{' '}
-        con onboarding guiado este mes
-      </div>
+      <button
+        type="button"
+        onClick={() => {
+          setOnboardingStatus('idle')
+          setOnboardingError('')
+          setOnboardingOpen(true)
+        }}
+        className="anim-banner block w-full border-b border-[#FFC107]/30 bg-[#FFC107] px-4 py-2 text-center text-sm font-bold text-[#0F0F0F] transition hover:bg-[#ffd45a]"
+      >
+        {onboardingAvailability.isOnboardingDay ? (
+          <>
+            Acceso limitado ·{' '}
+            <span className="underline decoration-2 underline-offset-2">
+              {onboardingAvailability.label}
+            </span>
+          </>
+        ) : (
+          <>
+            Acceso limitado · Solo{' '}
+            <span className="underline decoration-2 underline-offset-2">
+              {onboardingAvailability.label}
+            </span>{' '}
+            con arranque guiado este mes
+          </>
+        )}
+      </button>
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0F0F0F]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <span className="text-base font-bold tracking-tight sm:text-lg">
+          <span className="flex items-center gap-2 text-base font-bold tracking-tight sm:text-lg">
+            <ButterflyIcon className="h-7 w-7 shrink-0" />
             <BrandName />
           </span>
+          <nav className="hidden items-center gap-1 sm:flex">
+            <a
+              href="#demo"
+              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
+            >
+              Sin Rodeos
+            </a>
+            <a
+              href="#precios"
+              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
+            >
+              Planes
+            </a>
+            <a
+              href="#contacto"
+              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
+            >
+              Contacto
+            </a>
+          </nav>
           <div className="flex items-center gap-2 sm:gap-3">
             <a
               href={LOGIN_URL}
@@ -646,6 +835,7 @@ export default function App() {
       <section className="relative overflow-visible px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(197,36,57,0.15),transparent)]" />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <ButterflyIcon className="mascot-hero mx-auto mb-6 h-20 w-20 sm:h-28 sm:w-28" />
           <p className="anim-badge mb-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#FFC107] sm:text-base">
             La carta con IA que vende por ti
           </p>
@@ -1041,6 +1231,126 @@ export default function App() {
         </div>
       ) : null}
 
+      {onboardingOpen ? (
+        <div
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 p-4 sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Solicitud de arranque guiado"
+          onClick={() => setOnboardingOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl border border-white/10 bg-[#141414] p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#FFC107]">
+                  Arranque guiado
+                </p>
+                <h2 className="mt-2 text-2xl font-black leading-tight text-white">
+                  Reserva tu plaza
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-white/60">
+                  {onboardingAvailability.isOnboardingDay
+                    ? 'Hoy hacemos arranque guiado. Déjanos tus datos y te contactamos.'
+                    : `Quedan ${onboardingAvailability.spots} plazas para el arranque guiado de este mes.`}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOnboardingOpen(false)}
+                className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-white/10 text-xl font-bold text-white transition hover:bg-white/15"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            {onboardingStatus === 'sent' ? (
+              <div className="mt-8 flex flex-col items-center gap-4 py-4 text-center">
+                <ButterflyIcon className="mascot-fly-in h-16 w-16" />
+                <p className="success-text-trail text-base font-semibold text-white/90">
+                  Solicitud enviada. Te contactaremos pronto.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setOnboardingOpen(false)}
+                  className="mt-2 text-sm text-white/40 underline underline-offset-4 transition hover:text-white/70"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleOnboardingSubmit}
+                className="mt-6 space-y-4"
+              >
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Nombre
+                  </span>
+                  <input
+                    name="nombre"
+                    required
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="Tu nombre"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Restaurante
+                  </span>
+                  <input
+                    name="restaurante"
+                    required
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="Nombre del restaurante"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Email
+                  </span>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="tu@email.com"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/45">
+                    Teléfono
+                  </span>
+                  <input
+                    name="telefono"
+                    className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white outline-none transition placeholder:text-white/30 focus:border-[#FFC107]/60"
+                    placeholder="+34 ..."
+                  />
+                </label>
+                {onboardingError ? (
+                  <div className="rounded-md border border-[#C52439]/40 bg-[#C52439]/15 px-4 py-3 text-sm font-semibold text-white">
+                    {onboardingError}
+                  </div>
+                ) : null}
+                <button
+                  type="submit"
+                  disabled={onboardingStatus === 'submitting'}
+                  className={cx(
+                    'inline-flex w-full justify-center rounded-md px-5 py-3 text-sm font-black transition disabled:cursor-not-allowed disabled:opacity-60',
+                    red
+                  )}
+                >
+                  {onboardingStatus === 'submitting' ? 'Enviando...' : 'Solicitar plaza'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
+
       {/* 5. BENEFICIOS */}
       <section ref={benefitsRef} className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
         <h2 className="anim-benefit-title text-center text-3xl font-bold sm:text-4xl">
@@ -1125,7 +1435,7 @@ export default function App() {
       </section>
 
       {/* 7. PRICING */}
-      <section ref={pricingRef} id="precios" className="scroll-mt-24 border-t border-white/10 px-4 py-16 sm:px-6 sm:py-20">
+      <section ref={pricingRef} id="precios" className="scroll-mt-[28vh] border-t border-white/10 px-4 py-16 sm:scroll-mt-[22vh] sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="anim-pricing-title text-center text-2xl font-bold sm:text-3xl">
             Elige cómo quieres dominar la carta
@@ -1158,7 +1468,7 @@ export default function App() {
               >
                 Anual
                 <span className="rounded-full bg-[#FFC107]/20 px-2 py-0.5 text-[11px] font-black text-[#FFC107]">
-                  2 meses gratis
+                  1 mes gratis
                 </span>
               </button>
             </div>
@@ -1242,8 +1552,10 @@ export default function App() {
                 <li>✓ Traducciones (multi-idioma)</li>
                 <li>✓ Importación de productos (CSV)</li>
                 <li>✓ IA para crear/optimizar fichas</li>
-                <li>✓ <strong>200 créditos IA/mes incluidos</strong></li>
-                <li>✓ Ofertas y destacados en carta</li>
+                <li>✓ IA incluida: <strong>200 créditos/mes</strong></li>
+                <li>✓ Multi-idioma (36 idiomas)</li>
+                <li>✓ Ofertas y destacados</li>
+                <li>✓ Importación de productos (CSV)</li>
               </ul>
               <p className="mt-4 text-xs text-white/40">
                 Hasta 250 productos y 15 categorías · 2 restaurantes
@@ -1286,6 +1598,7 @@ export default function App() {
               <ul className="mt-4 flex-1 space-y-2 text-sm text-white/70">
                 <li>✓ Carta pública responsive (móvil y QR)</li>
                 <li>✓ Gestión de productos y categorías</li>
+                <li>✓ Alérgenos</li>
                 <li>✓ Apariencia básica (logo/colores)</li>
                 <li>✓ Soporte por email</li>
                 <li style={{color:'rgba(255,255,255,.35)'}}>— Sin IA ni traducciones</li>
@@ -1340,6 +1653,10 @@ export default function App() {
             </div>
           </div>
 
+          <p className="mt-6 text-center text-xs leading-relaxed text-white/45">
+            Precios sin IVA. La facturación anual se cobra en un único pago.
+          </p>
+
           {/* Franquicias */}
           <div className="mt-10 rounded-xl border border-[#FFC107]/40 bg-[#FFC107]/5 p-6 text-center sm:p-8">
             <h3 className="text-3xl font-black text-[#FFC107] sm:text-4xl">
@@ -1374,7 +1691,18 @@ export default function App() {
           </h2>
           <p className="anim-cta-p mt-4 text-lg text-white/75">
             Cada día sin <BrandName regClassName="text-white/55" /> es dinero que no entra.{' '}
-            <span className="text-[#FFC107]">Plazas limitadas</span> este mes.
+            <button
+              type="button"
+              onClick={() => {
+                setOnboardingStatus('idle')
+                setOnboardingError('')
+                setOnboardingOpen(true)
+              }}
+              className="font-semibold text-[#FFC107] underline decoration-[#FFC107]/50 underline-offset-4 transition hover:text-[#ffd45a]"
+            >
+              Plazas limitadas
+            </button>{' '}
+            este mes.
           </p>
           <div className="anim-cta-btns mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <a
@@ -1403,7 +1731,127 @@ export default function App() {
         </div>
       </section>
 
+      {/* CONTACTO */}
+      <section
+        id="contacto"
+        className="scroll-mt-24 border-t border-white/10 px-4 py-16 sm:px-6 sm:py-20"
+      >
+        <div className="mx-auto max-w-xl">
+          <p className="mb-2 text-center text-sm font-black uppercase tracking-[0.12em] text-[#FFC107]">
+            Contacto
+          </p>
+          <h2 className="mb-8 text-balance text-center text-3xl font-black leading-tight text-white sm:text-4xl">
+            ¿Hablamos?
+          </h2>
+
+          {contactStatus === 'ok' ? (
+            <div className="rounded-xl border border-[#FFC107]/30 bg-[#FFC107]/10 px-6 py-10 text-center">
+              <p className="text-2xl font-black text-white">¡Recibido! 🎉</p>
+              <p className="mt-3 text-white/70">Te respondemos en menos de 24 horas.</p>
+            </div>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault()
+                setContactStatus('sending')
+                setContactError('')
+                try {
+                  const res = await fetch('/contact.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contactForm),
+                  })
+                  const json = await res.json()
+                  if (json.ok) {
+                    setContactStatus('ok')
+                  } else {
+                    setContactStatus('error')
+                    setContactError(json.error || 'Error desconocido.')
+                  }
+                } catch {
+                  setContactStatus('error')
+                  setContactError('Error de conexión. Inténtalo de nuevo.')
+                }
+              }}
+              className="flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                    Nombre *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Tu nombre"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="tu@email.com"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                  Teléfono <span className="normal-case text-white/30">(opcional)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={contactForm.phone}
+                  onChange={(e) => setContactForm((f) => ({ ...f, phone: e.target.value }))}
+                  placeholder="+34 600 000 000"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/50">
+                  Mensaje *
+                </label>
+                <textarea
+                  required
+                  rows={5}
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm((f) => ({ ...f, message: e.target.value }))}
+                  placeholder="Cuéntanos qué necesitas…"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
+                />
+              </div>
+              {contactError && (
+                <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                  {contactError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={contactStatus === 'sending'}
+                className={cx(
+                  'rounded-lg px-8 py-3.5 text-sm font-black transition',
+                  contactStatus === 'sending'
+                    ? 'cursor-not-allowed opacity-60 bg-[#C52439] text-white'
+                    : red
+                )}
+              >
+                {contactStatus === 'sending' ? 'Enviando…' : 'Enviar mensaje'}
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+
       <footer className="border-t border-white/10 px-4 py-8 text-center sm:px-6">
+        <ButterflyIcon className="mx-auto mb-4 h-10 w-10 opacity-80" />
         <div className="text-4xl font-bold tracking-tight sm:text-5xl">
           <BrandName regSizeClass="text-base sm:text-lg" />
         </div>
