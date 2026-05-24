@@ -1510,7 +1510,7 @@ export default function App() {
                 Hasta 1.000 productos y 100 categorías · 3 restaurantes
               </p>
               <a
-                href={`${SIGNUP_URL}/premium`}
+                href={`${SIGNUP_URL}/premium?interval=${annualBilling ? 'annual' : 'monthly'}`}
                 className={cx(
                   'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   orange
@@ -1561,7 +1561,7 @@ export default function App() {
                 Hasta 250 productos y 15 categorías · 2 restaurantes
               </p>
               <a
-                href={`${SIGNUP_URL}/pro`}
+                href={`${SIGNUP_URL}/pro?interval=${annualBilling ? 'annual' : 'monthly'}`}
                 className={cx(
                   'mt-6 inline-flex w-full justify-center rounded-md py-3 text-center text-sm font-bold transition',
                   red
@@ -1607,7 +1607,7 @@ export default function App() {
                 Hasta 70 productos y 6 categorías · Sin IA, traducciones ni importaciones avanzadas
               </p>
               <a
-                href={`${SIGNUP_URL}/basico`}
+                href={`${SIGNUP_URL}/basico?interval=${annualBilling ? 'annual' : 'monthly'}`}
                 className="mt-6 inline-flex w-full justify-center rounded-md border-2 border-[#FF7A00] bg-transparent py-3 text-center text-sm font-bold text-[#FF7A00] transition hover:bg-[#FF7A00] hover:text-white"
               >
                 Empezar con Básico
