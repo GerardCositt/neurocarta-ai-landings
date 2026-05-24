@@ -1517,6 +1517,7 @@ export default function App() {
               <ul className="mt-4 flex-1 space-y-2 text-sm text-white/75">
                 <li>✓ IA avanzada + traducciones + CSV</li>
                 <li>✓ <strong>400 créditos IA/mes incluidos</strong></li>
+                <li>✓ API REST para conectar TPV</li>
                 <li>✓ Prioridad en nuevas funcionalidades</li>
                 <li>✓ Soporte preferente</li>
               </ul>
@@ -1569,7 +1570,7 @@ export default function App() {
                 <li>✓ IA incluida: <strong>200 créditos/mes</strong></li>
                 <li>✓ Multi-idioma (36 idiomas)</li>
                 <li>✓ Ofertas y destacados</li>
-                <li>✓ Importación de productos (CSV)</li>
+                <li>✓ API REST para conectar TPV</li>
               </ul>
               <p className="mt-4 text-xs text-white/40">
                 Hasta 250 productos y 15 categorías · 2 restaurantes
