@@ -1448,30 +1448,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 7. API / TPV INTEGRATION */}
-      <section id="api" className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <span className={sectionAccentTitleLineClass}>Conecta tu TPV.</span>
-          <span className={sectionAccentTitleGoldClass}>La carta siempre al día.</span>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/65">
-            La API REST de NeuroCarta sincroniza automáticamente productos, precios y disponibilidad
-            entre tu TPV y la carta digital. Sin copiar, sin pegar, sin errores.
-          </p>
-          <div className="mt-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold text-[#FFC107]">
-            Disponible en planes Pro y Premium
-          </div>
-          <div className="mt-8">
-            <a
-              href="#contacto"
-              className="inline-block rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/40 hover:bg-white/10"
-            >
-              Más info →
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. PRICING */}
+      {/* 7. PRICING */}
       <section ref={pricingRef} id="precios" className="scroll-mt-[28vh] border-t border-white/10 px-4 py-16 sm:scroll-mt-[22vh] sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="anim-pricing-title text-center text-2xl font-bold sm:text-3xl">
@@ -1884,6 +1861,29 @@ export default function App() {
               </button>
             </form>
           )}
+        </div>
+      </section>
+
+      {/* API / TPV INTEGRATION */}
+      <section id="api" className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className={sectionAccentTitleLineClass}>Conecta tu TPV.</span>
+          <span className={sectionAccentTitleGoldClass}>La carta siempre al día.</span>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/65">
+            La API REST de NeuroCarta sincroniza automáticamente productos, precios y disponibilidad
+            entre tu TPV y la carta digital. Sin copiar, sin pegar, sin errores.
+          </p>
+          <div className="mt-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold text-[#FFC107]">
+            Disponible en planes Pro y Premium
+          </div>
+          <div className="mt-8">
+            <a
+              href="#contacto"
+              className="inline-block rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/40 hover:bg-white/10"
+            >
+              Más info →
+            </a>
+          </div>
         </div>
       </section>
 
