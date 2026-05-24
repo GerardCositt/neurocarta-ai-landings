@@ -1873,6 +1873,7 @@ export default function App() {
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/65">
             La API REST de NeuroCarta sincroniza automáticamente productos, precios y disponibilidad
             entre tu TPV y la carta digital. Sin copiar, sin pegar, sin errores.
+            <span className="mt-2 block text-sm text-white/40">Si tu TPV lo permite.</span>
           </p>
           <div className="mt-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold text-[#FFC107]">
             Disponible en planes Pro y Premium
