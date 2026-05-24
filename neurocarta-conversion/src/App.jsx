@@ -693,18 +693,20 @@ export default function App() {
           })
         }
 
-        const pricingGridTrigger = makeScrollTrigger('.anim-pricing-grid')
-        if (pricingGridTrigger) {
-          gsap.from('.anim-plan', {
-            y: isDesktop ? 200 : 36,
-            opacity: 0,
-            scale: isDesktop ? 0.8 : 0.98,
-            stagger: isDesktop ? 0.12 : 0.08,
-            duration: isMobile ? 0.45 : undefined,
-            ease: isMobile ? 'power2.out' : undefined,
-            scrollTrigger: pricingGridTrigger,
-          })
-        }
+        gsap.from('.anim-plan', {
+          y: isDesktop ? 60 : 36,
+          opacity: 0,
+          scale: isDesktop ? 0.94 : 0.98,
+          stagger: isDesktop ? 0.1 : 0.08,
+          duration: 0.5,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: '.anim-pricing-grid',
+            start: 'top 88%',
+            toggleActions: 'play none none none',
+            once: true,
+          },
+        })
 
         const ctaTitleTrigger = makeScrollTrigger('.anim-cta-h2')
         if (ctaTitleTrigger) {
