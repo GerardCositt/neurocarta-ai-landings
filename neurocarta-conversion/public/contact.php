@@ -133,7 +133,7 @@ function odoo_call($path, $method, $params) {
         'method'  => 'POST',
         'header'  => "Content-Type: text/xml\r\nContent-Length: " . strlen($body),
         'content' => $body,
-        'timeout' => 30,
+        'timeout' => 5,
     ]]);
     $resp = @file_get_contents(ODOO_URL . $path, false, $ctx);
     if (!$resp) return null;
@@ -211,18 +211,23 @@ $notifyHtml = <<<HTML
 HTML;
 
 $r1 = smtp_send($email,              'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
-$r2 = odoo_create_lead($name, $email, $phone, $message);
 $r3 = smtp_send('gerard@cositt.com', "🦋 Nuevo contacto web: $name",              $notifyHtml);
 
-if ($r1 !== true || $r2 !== true) {
-    error_log('contact.php r1=' . var_export($r1, true) . ' r2=' . var_export($r2, true));
+// Odoo es no-bloqueante: si falla no afecta al usuario
+$r2 = odoo_create_lead($name, $email, $phone, $message);
+if ($r2 !== true) {
+    error_log('contact.php odoo r2=' . var_export($r2, true));
+}
+
+// El formulario tiene éxito si al menos uno de los dos emails SMTP llega
+if ($r1 !== true && $r3 !== true) {
+    error_log('contact.php smtp r1=' . var_export($r1, true) . ' r3=' . var_export($r3, true));
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Error al enviar. Escríbenos a hola@neurocarta.ai']);
     exit;
 }
 
-if ($r3 !== true) {
-    error_log('contact.php notify r3=' . var_export($r3, true));
-}
+if ($r1 !== true) error_log('contact.php confirm r1=' . var_export($r1, true));
+if ($r3 !== true) error_log('contact.php notify r3=' . var_export($r3, true));
 
 echo json_encode(['ok' => true]);
