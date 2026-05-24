@@ -1434,7 +1434,68 @@ export default function App() {
         </div>
       </section>
 
-      {/* 7. PRICING */}
+      {/* 7. API / TPV INTEGRATION */}
+      <section id="api" className="border-t border-white/10 bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center">
+            <span className={sectionAccentTitleLineClass}>Conecta tu TPV.</span>
+            <span className={sectionAccentTitleGoldClass}>La carta siempre al día.</span>
+            <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/65">
+              La API REST de NeuroCarta sincroniza automáticamente productos, precios y disponibilidad
+              entre tu TPV y la carta digital. Sin copiar, sin pegar, sin errores.
+            </p>
+            <div className="mt-4 inline-block rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-4 py-1.5 text-sm font-semibold text-[#FFC107]">
+              Disponible en planes Pro y Premium
+            </div>
+          </div>
+
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { method: 'GET',   endpoint: '/api/v1/menu',                    desc: 'Lee toda la carta: categorías y productos' },
+              { method: 'POST',  endpoint: '/api/v1/products/sync',            desc: 'Crea o actualiza productos en bloque por SKU' },
+              { method: 'PATCH', endpoint: '/api/v1/products/{sku}/status',    desc: 'Activa o desactiva un plato al instante' },
+              { method: 'POST',  endpoint: '/api/v1/categories/sync',          desc: 'Sincroniza categorías desde tu TPV' },
+            ].map((e) => (
+              <div key={e.endpoint} className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+                <span className={`inline-block rounded px-2 py-0.5 text-xs font-bold ${
+                  e.method === 'GET'   ? 'bg-green-900/60 text-green-400' :
+                  e.method === 'POST'  ? 'bg-blue-900/60 text-blue-400' :
+                                         'bg-yellow-900/60 text-yellow-400'
+                }`}>{e.method}</span>
+                <p className="mt-2 font-mono text-[11px] text-white/50 break-all">{e.endpoint}</p>
+                <p className="mt-2 text-sm leading-relaxed text-white/65">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-[#0D0D0D]">
+            <div className="flex items-center gap-2 border-b border-white/10 px-5 py-3">
+              <span className="h-3 w-3 rounded-full bg-red-500/70"></span>
+              <span className="h-3 w-3 rounded-full bg-yellow-500/70"></span>
+              <span className="h-3 w-3 rounded-full bg-green-500/70"></span>
+              <span className="ml-2 font-mono text-xs text-white/30">sync-productos.sh</span>
+            </div>
+            <pre className="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-white/75"><code>{`curl -X POST https://app.neurocarta.ai/api/v1/products/sync \\
+  -H "Authorization: Bearer nc_live_xxxxxxxxxxxx" \\
+  -H "Content-Type: application/json" \\
+  -d '[
+    {
+      "sku": "PLATO-001",
+      "name": "Croquetas de jamón",
+      "price": 8.50,
+      "category_sku": "CAT-ENTRANTES",
+      "active": true
+    }
+  ]'`}</code></pre>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-white/40">
+            Autenticación con API key · Rate limit 120 req/min · Respuesta JSON · SKU como identificador único
+          </p>
+        </div>
+      </section>
+
+      {/* 8. PRICING */}
       <section ref={pricingRef} id="precios" className="scroll-mt-[28vh] border-t border-white/10 px-4 py-16 sm:scroll-mt-[22vh] sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="anim-pricing-title text-center text-2xl font-bold sm:text-3xl">
