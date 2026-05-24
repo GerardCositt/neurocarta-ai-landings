@@ -335,6 +335,7 @@ export default function App() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [contactStatus, setContactStatus] = useState('idle')
   const [contactError, setContactError] = useState('')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const onboardingAvailability = getOnboardingAvailability()
 
   const handleOnboardingSubmit = async (event) => {
@@ -791,26 +792,17 @@ export default function App() {
             <ButterflyIcon className="h-7 w-7 shrink-0" />
             <BrandName />
           </span>
+
+          {/* Nav desktop */}
           <nav className="hidden items-center gap-1 sm:flex">
-            <a
-              href="#demo"
-              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
-            >
-              Sin Rodeos
-            </a>
-            <a
-              href="#precios"
-              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
-            >
-              Planes
-            </a>
-            <a
-              href="#contacto"
-              className="rounded-md px-3 py-2 text-sm font-semibold text-white/70 transition hover:text-white"
-            >
-              Contacto
-            </a>
+            {[['#demo','Sin Rodeos'],['#precios','Planes'],['#contacto','Contacto']].map(([href, label]) => (
+              <a key={href} href={href}
+                className="rounded-md px-4 py-2 text-base font-semibold text-white/70 transition hover:text-white">
+                {label}
+              </a>
+            ))}
           </nav>
+
           <div className="flex items-center gap-2 sm:gap-3">
             <a
               href={LOGIN_URL}
@@ -820,15 +812,35 @@ export default function App() {
             </a>
             <a
               href={SIGNUP_URL}
-              className={cx(
-                'rounded-md px-3 py-2 text-xs font-black transition sm:px-4 sm:text-sm',
-                red
-              )}
+              className={cx('rounded-md px-3 py-2 text-xs font-black transition sm:px-4 sm:text-sm', red)}
             >
               Crear cuenta
             </a>
+            {/* Hamburger — solo móvil */}
+            <button
+              onClick={() => setMobileMenuOpen(o => !o)}
+              className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-md sm:hidden"
+              aria-label="Menú"
+            >
+              <span className={cx('block h-0.5 w-5 bg-white transition-all', mobileMenuOpen && 'translate-y-2 rotate-45')} />
+              <span className={cx('block h-0.5 w-5 bg-white transition-all', mobileMenuOpen && 'opacity-0')} />
+              <span className={cx('block h-0.5 w-5 bg-white transition-all', mobileMenuOpen && '-translate-y-2 -rotate-45')} />
+            </button>
           </div>
         </div>
+
+        {/* Nav móvil desplegable */}
+        {mobileMenuOpen && (
+          <nav className="border-t border-white/10 bg-[#0F0F0F] px-4 py-3 sm:hidden">
+            {[['#demo','Sin Rodeos'],['#precios','Planes'],['#contacto','Contacto']].map(([href, label]) => (
+              <a key={href} href={href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-md px-3 py-3 text-base font-semibold text-white/70 transition hover:text-white">
+                {label}
+              </a>
+            ))}
+          </nav>
+        )}
       </header>
 
       {/* 1. HERO */}
