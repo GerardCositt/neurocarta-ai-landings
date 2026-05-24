@@ -129,12 +129,18 @@ function odoo_call($path, $method, $params) {
     foreach ($params as $p) $body .= '<param>' . v2x($p) . '</param>';
     $body .= '</params></methodCall>';
 
-    $ctx = stream_context_create(['http' => [
-        'method'  => 'POST',
-        'header'  => "Content-Type: text/xml\r\nContent-Length: " . strlen($body),
-        'content' => $body,
-        'timeout' => 5,
-    ]]);
+    $ctx = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: text/xml\r\nContent-Length: " . strlen($body),
+            'content' => $body,
+            'timeout' => 12,
+        ],
+        'ssl' => [
+            'verify_peer'      => false,
+            'verify_peer_name' => false,
+        ],
+    ]);
     $resp = @file_get_contents(ODOO_URL . $path, false, $ctx);
     if (!$resp) return null;
     $xml = @simplexml_load_string($resp);
@@ -217,7 +223,15 @@ $r4 = smtp_send('francoise@cositt.com',  "🦋 Nuevo contacto web: $name",      
 // Odoo es no-bloqueante: si falla no afecta al usuario
 $r2 = odoo_create_lead($name, $email, $phone, $message);
 if ($r2 !== true) {
-    error_log('contact.php odoo r2=' . var_export($r2, true));
+    $odooError = is_string($r2) ? $r2 : 'null/false';
+    error_log('contact.php odoo r2=' . $odooError);
+    // Reenviar notificación con el error de Odoo para diagnóstico
+    $debugHtml = str_replace(
+        'Lead creado en Odoo CRM (tag: NeuroCarta.ai Web)',
+        '<strong style="color:#c00;">⚠️ Odoo FALLÓ: ' . htmlspecialchars($odooError) . '</strong>',
+        $notifyHtml
+    );
+    smtp_send('gerard@cositt.com', "⚠️ Odoo error — contacto: $name", $debugHtml);
 }
 
 // El formulario tiene éxito si al menos uno de los dos emails SMTP llega
