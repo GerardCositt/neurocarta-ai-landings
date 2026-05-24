@@ -73,103 +73,6 @@ function smtp_send($to, $subject, $html) {
     return true;
 }
 
-// ===================== Odoo XML-RPC =====================
-define('ODOO_URL',  'https://control.cositt.net');
-define('ODOO_DB',   'cosittnew');
-define('ODOO_USER', 'gerard@cositt.com');
-define('ODOO_KEY',  '867dcda58d6a5f1fdc1698a98149f428d3af0490');
-define('ODOO_TAG',  174); // tag "NeuroCarta.ai Web"
-
-function v2x($v) {
-    if (is_bool($v))   return '<value><boolean>' . ($v ? 1 : 0) . '</boolean></value>';
-    if (is_int($v))    return '<value><int>' . $v . '</int></value>';
-    if (is_null($v))   return '<value><boolean>0</boolean></value>';
-    if (is_string($v)) return '<value><string>' . htmlspecialchars($v, ENT_XML1 | ENT_QUOTES) . '</string></value>';
-    if (is_array($v)) {
-        $keys = array_keys($v);
-        if ($keys === range(0, count($v) - 1)) {
-            $out = '<value><array><data>';
-            foreach ($v as $i) $out .= v2x($i);
-            return $out . '</data></array></value>';
-        }
-        $out = '<value><struct>';
-        foreach ($v as $k => $i) {
-            $out .= '<member><name>' . htmlspecialchars($k, ENT_XML1) . '</name>' . v2x($i) . '</member>';
-        }
-        return $out . '</struct></value>';
-    }
-    return '<value><string>' . htmlspecialchars((string)$v, ENT_XML1) . '</string></value>';
-}
-
-function x2v($node) {
-    if (!($node instanceof SimpleXMLElement)) return null;
-    if (isset($node->int))     return (int)(string)$node->int;
-    if (isset($node->i4))      return (int)(string)$node->i4;
-    if (isset($node->i8))      return (int)(string)$node->i8;
-    if (isset($node->boolean)) return (bool)(int)(string)$node->boolean;
-    if (isset($node->string))  return (string)$node->string;
-    if (isset($node->array)) {
-        $r = [];
-        foreach ($node->array->data->value as $child) $r[] = x2v($child);
-        return $r;
-    }
-    if (isset($node->struct)) {
-        $r = [];
-        foreach ($node->struct->member as $m) $r[(string)$m->name] = x2v($m->value);
-        return $r;
-    }
-    $text = trim((string)$node);
-    return $text !== '' ? $text : null;
-}
-
-function odoo_call($path, $method, $params) {
-    $body = '<?xml version="1.0"?><methodCall><methodName>'
-          . htmlspecialchars($method, ENT_XML1)
-          . '</methodName><params>';
-    foreach ($params as $p) $body .= '<param>' . v2x($p) . '</param>';
-    $body .= '</params></methodCall>';
-
-    $ctx = stream_context_create([
-        'http' => [
-            'method'  => 'POST',
-            'header'  => "Content-Type: text/xml\r\nContent-Length: " . strlen($body),
-            'content' => $body,
-            'timeout' => 12,
-        ],
-        'ssl' => [
-            'verify_peer'      => false,
-            'verify_peer_name' => false,
-        ],
-    ]);
-    $resp = @file_get_contents(ODOO_URL . $path, false, $ctx);
-    if (!$resp) return null;
-    $xml = @simplexml_load_string($resp);
-    if (!$xml || isset($xml->fault)) return null;
-    return x2v($xml->params->param->value);
-}
-
-function odoo_create_lead($name, $email, $phone, $message) {
-    $uid = odoo_call('/xmlrpc/2/common', 'authenticate',
-        [ODOO_DB, ODOO_USER, ODOO_KEY, []]);
-    if (!is_int($uid) || $uid < 1) return "Odoo auth failed (uid=$uid)";
-
-    $id = odoo_call('/xmlrpc/2/object', 'execute_kw', [
-        ODOO_DB, $uid, ODOO_KEY,
-        'crm.lead', 'create',
-        [[
-            'name'         => "\xf0\x9f\xa6\x8b NeuroCarta.ai \xe2\x80\x94 $name",
-            'contact_name' => $name,
-            'email_from'   => $email,
-            'phone'        => $phone,
-            'description'  => "Mensaje:\n$message",
-            'tag_ids'      => [[6, 0, [ODOO_TAG]]],
-            'team_id'      => 1,
-        ]],
-        [],
-    ]);
-    return (is_int($id) && $id > 0) ? true : "Lead failed: " . var_export($id, true);
-}
-
 // ===================== Ejecutar =====================
 $confirmHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
@@ -201,7 +104,7 @@ $confirmHtml = <<<HTML
 </body></html>
 HTML;
 
-$phoneStr = $phone ? "<br><strong>Teléfono:</strong> $phone" : '';
+$phoneStr = $phone ? $phone : '—';
 $notifyHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="font-family:Arial,sans-serif;color:#333;padding:24px;">
@@ -209,41 +112,28 @@ $notifyHtml = <<<HTML
   <table style="border-collapse:collapse;width:100%;max-width:520px;">
     <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;width:110px;">Nombre</td><td style="padding:8px 12px;border:1px solid #eee;">$name</td></tr>
     <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;">Email</td><td style="padding:8px 12px;border:1px solid #eee;"><a href="mailto:$email">$email</a></td></tr>
-    <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;">Teléfono</td><td style="padding:8px 12px;border:1px solid #eee;">{$phone}</td></tr>
+    <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;">Teléfono</td><td style="padding:8px 12px;border:1px solid #eee;">{$phoneStr}</td></tr>
     <tr><td style="padding:8px 12px;background:#f5f5f5;font-weight:bold;vertical-align:top;">Mensaje</td><td style="padding:8px 12px;border:1px solid #eee;">$message</td></tr>
   </table>
-  <p style="margin-top:20px;color:#999;font-size:12px;">Lead creado en Odoo CRM (tag: NeuroCarta.ai Web)</p>
 </body></html>
 HTML;
 
-$r1 = smtp_send($email,                  'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
-$r3 = smtp_send('gerard@cositt.com',     "🦋 Nuevo contacto web: $name",              $notifyHtml);
-$r4 = smtp_send('francoise@cositt.com',  "🦋 Nuevo contacto web: $name",              $notifyHtml);
+$r1 = smtp_send($email,                   'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
+$r3 = smtp_send('gerard@cositt.com',      "🦋 Nuevo contacto web: $name",              $notifyHtml);
+$r4 = smtp_send('francoise@cositt.com',   "🦋 Nuevo contacto web: $name",              $notifyHtml);
+$r5 = smtp_send('neurocarta@cositt.net',  "🦋 Nuevo contacto web: $name",              $notifyHtml);
 
-// Odoo es no-bloqueante: si falla no afecta al usuario
-$r2 = odoo_create_lead($name, $email, $phone, $message);
-if ($r2 !== true) {
-    $odooError = is_string($r2) ? $r2 : 'null/false';
-    error_log('contact.php odoo r2=' . $odooError);
-    // Reenviar notificación con el error de Odoo para diagnóstico
-    $debugHtml = str_replace(
-        'Lead creado en Odoo CRM (tag: NeuroCarta.ai Web)',
-        '<strong style="color:#c00;">⚠️ Odoo FALLÓ: ' . htmlspecialchars($odooError) . '</strong>',
-        $notifyHtml
-    );
-    smtp_send('gerard@cositt.com', "⚠️ Odoo error — contacto: $name", $debugHtml);
-}
+if ($r1 !== true) error_log('contact.php confirm r1='   . var_export($r1, true));
+if ($r3 !== true) error_log('contact.php gerard r3='    . var_export($r3, true));
+if ($r4 !== true) error_log('contact.php francoise r4=' . var_export($r4, true));
+if ($r5 !== true) error_log('contact.php odoo r5='      . var_export($r5, true));
 
-// El formulario tiene éxito si al menos uno de los dos emails SMTP llega
-if ($r1 !== true && $r3 !== true) {
-    error_log('contact.php smtp r1=' . var_export($r1, true) . ' r3=' . var_export($r3, true));
+// Éxito si al menos uno de los emails internos llega
+if ($r3 !== true && $r4 !== true && $r5 !== true) {
+    error_log('contact.php all notify failed');
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Error al enviar. Escríbenos a hola@neurocarta.ai']);
     exit;
 }
-
-if ($r1 !== true) error_log('contact.php confirm r1=' . var_export($r1, true));
-if ($r3 !== true) error_log('contact.php notify gerard r3=' . var_export($r3, true));
-if ($r4 !== true) error_log('contact.php notify francoise r4=' . var_export($r4, true));
 
 echo json_encode(['ok' => true]);
