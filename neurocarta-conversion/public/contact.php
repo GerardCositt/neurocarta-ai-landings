@@ -210,8 +210,9 @@ $notifyHtml = <<<HTML
 </body></html>
 HTML;
 
-$r1 = smtp_send($email,              'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
-$r3 = smtp_send('gerard@cositt.com', "🦋 Nuevo contacto web: $name",              $notifyHtml);
+$r1 = smtp_send($email,                  'Hemos recibido tu mensaje — NeuroCarta.ai', $confirmHtml);
+$r3 = smtp_send('gerard@cositt.com',     "🦋 Nuevo contacto web: $name",              $notifyHtml);
+$r4 = smtp_send('francoise@cositt.com',  "🦋 Nuevo contacto web: $name",              $notifyHtml);
 
 // Odoo es no-bloqueante: si falla no afecta al usuario
 $r2 = odoo_create_lead($name, $email, $phone, $message);
@@ -228,6 +229,7 @@ if ($r1 !== true && $r3 !== true) {
 }
 
 if ($r1 !== true) error_log('contact.php confirm r1=' . var_export($r1, true));
-if ($r3 !== true) error_log('contact.php notify r3=' . var_export($r3, true));
+if ($r3 !== true) error_log('contact.php notify gerard r3=' . var_export($r3, true));
+if ($r4 !== true) error_log('contact.php notify francoise r4=' . var_export($r4, true));
 
 echo json_encode(['ok' => true]);
