@@ -336,6 +336,9 @@ export default function App() {
   const [contactStatus, setContactStatus] = useState('idle')
   const [contactError, setContactError] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [cookiesAccepted, setCookiesAccepted] = useState(() =>
+    typeof window !== 'undefined' && !!localStorage.getItem('nc_cookies_accepted')
+  )
   const onboardingAvailability = getOnboardingAvailability()
 
   const handleOnboardingSubmit = async (event) => {
@@ -1897,7 +1900,49 @@ export default function App() {
         <p className="mx-auto mt-3 max-w-4xl text-balance text-xl font-bold tracking-tight leading-snug text-white/80 sm:mt-4 sm:text-2xl sm:leading-snug">
           Carta que vende · No es información, es conversión
         </p>
+        <p className="mt-4 text-xs text-white/30">© {new Date().getFullYear()} NeuroCarta.ai · Cositt · CIF B93340602</p>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-white/35">
+          <a href="/terminos"    className="hover:text-white/70 transition">Términos y condiciones</a>
+          <span className="text-white/15">·</span>
+          <a href="/privacidad"  className="hover:text-white/70 transition">Política de privacidad</a>
+          <span className="text-white/15">·</span>
+          <a href="/cookies"     className="hover:text-white/70 transition">Política de cookies</a>
+          <span className="text-white/15">·</span>
+          <a href="/aviso-legal" className="hover:text-white/70 transition">Aviso legal</a>
+        </div>
       </footer>
+
+      {/* Banner cookies */}
+      {!cookiesAccepted && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0f0f0f]/97 px-4 py-4 backdrop-blur-md sm:px-6">
+          <div className="mx-auto flex max-w-5xl flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm leading-relaxed text-white/70">
+              Usamos cookies esenciales para el funcionamiento del sitio.{' '}
+              <a href="/cookies" className="underline underline-offset-2 hover:text-white transition">
+                Política de cookies
+              </a>
+              .
+            </p>
+            <div className="flex shrink-0 gap-2">
+              <a
+                href="/cookies"
+                className="rounded-lg border border-white/15 px-4 py-2 text-xs font-semibold text-white/60 transition hover:border-white/30 hover:text-white/80"
+              >
+                Más info
+              </a>
+              <button
+                onClick={() => {
+                  localStorage.setItem('nc_cookies_accepted', '1')
+                  setCookiesAccepted(true)
+                }}
+                className="rounded-lg bg-[#FFC107] px-5 py-2 text-xs font-black text-[#0f0f0f] transition hover:bg-[#FFD54F]"
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
