@@ -1900,16 +1900,14 @@ export default function App() {
         <p className="mx-auto mt-3 max-w-4xl text-balance text-xl font-bold tracking-tight leading-snug text-white/80 sm:mt-4 sm:text-2xl sm:leading-snug">
           Carta que vende · No es información, es conversión
         </p>
-        <p className="mt-4 text-xs text-white/30">© {new Date().getFullYear()} NeuroCarta.ai · Cositt · CIF B93340602</p>
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-white/35">
-          <a href="/terminos"    className="hover:text-white/70 transition">Términos y condiciones</a>
-          <span className="text-white/15">·</span>
-          <a href="/privacidad"  className="hover:text-white/70 transition">Política de privacidad</a>
-          <span className="text-white/15">·</span>
-          <a href="/cookies"     className="hover:text-white/70 transition">Política de cookies</a>
-          <span className="text-white/15">·</span>
-          <a href="/aviso-legal" className="hover:text-white/70 transition">Aviso legal</a>
-        </div>
+        <nav className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/40">
+          <a href="https://app.neurocarta.ai/legal/condiciones" className="hover:text-white/70 transition-colors">Condiciones de uso</a>
+          <a href="https://app.neurocarta.ai/legal/contratacion" className="hover:text-white/70 transition-colors">Contratación</a>
+          <a href="https://app.neurocarta.ai/legal/privacidad" className="hover:text-white/70 transition-colors">Política de privacidad</a>
+          <a href="https://app.neurocarta.ai/legal/cookies" className="hover:text-white/70 transition-colors">Política de cookies</a>
+          <a href="https://app.neurocarta.ai/legal/aviso-legal" className="hover:text-white/70 transition-colors">Aviso legal</a>
+        </nav>
+        <p className="mt-4 text-xs text-white/25">&copy; {new Date().getFullYear()} NeuroCarta.ai® · Todos los derechos reservados</p>
       </footer>
 
       {/* Banner cookies */}
