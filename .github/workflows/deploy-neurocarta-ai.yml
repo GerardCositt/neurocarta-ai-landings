@@ -29,6 +29,8 @@ jobs:
 
       - name: Build
         working-directory: neurocarta-conversion
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
         run: npm run build
 
       - name: Start SSH agent
@@ -49,6 +51,7 @@ jobs:
           REMOTE_PATH: ${{ secrets.PLESK_REMOTE_PATH }}
         run: |
           rsync -az --delete \
+            --exclude=config.php \
             --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r \
             -e "ssh -p ${PORT}" \
             "neurocarta-conversion/dist/" \

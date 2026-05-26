@@ -280,6 +280,11 @@ export default function App() {
   const pricingRef   = useRef(null)
   const ctaRef       = useRef(null)
 
+  // Turnstile anti-bot tokens (refs para no re-renderizar)
+  const contactTurnstileToken    = useRef('')
+  const onboardingTurnstileToken = useRef('')
+  const onboardingTurnstileContainer = useRef(null)
+
   // Pricing toggle
   const [annualBilling, setAnnualBilling] = useState(false)
   const priceBasic   = annualBilling ? '275€' : '25€'
@@ -356,12 +361,14 @@ export default function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: String(formData.get('nombre') || '').trim(),
+          name:       String(formData.get('nombre') || '').trim(),
           restaurant: String(formData.get('restaurante') || '').trim(),
-          email: String(formData.get('email') || '').trim(),
-          phone: String(formData.get('telefono') || '').trim(),
+          email:      String(formData.get('email') || '').trim(),
+          phone:      String(formData.get('telefono') || '').trim(),
+          website:    String(formData.get('website') || ''),
           availableSpots: onboardingAvailability.label,
-          source: 'neurocarta-conversion',
+          source:     'neurocarta-conversion',
+          'cf-turnstile-response': onboardingTurnstileToken.current,
         }),
       })
 
@@ -376,6 +383,30 @@ export default function App() {
       setOnboardingError('No se ha podido enviar. Escríbenos a gerard@cositt.com.')
     }
   }
+
+  // Registrar callbacks Turnstile en window (llamados por data-callback)
+  useEffect(() => {
+    window.__ncContactTurnstile    = (t) => { contactTurnstileToken.current = t }
+    window.__ncContactTurnstileExp = ()  => { contactTurnstileToken.current = '' }
+    return () => {
+      delete window.__ncContactTurnstile
+      delete window.__ncContactTurnstileExp
+    }
+  }, [])
+
+  // Renderizar Turnstile en el modal de onboarding cuando se abre
+  useEffect(() => {
+    if (!onboardingOpen) return
+    const el = onboardingTurnstileContainer.current
+    if (!el || !window.turnstile) return
+    onboardingTurnstileToken.current = ''
+    const id = window.turnstile.render(el, {
+      sitekey:           import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA',
+      callback:          (t) => { onboardingTurnstileToken.current = t },
+      'expired-callback': () => { onboardingTurnstileToken.current = '' },
+    })
+    return () => { window.turnstile?.remove(id) }
+  }, [onboardingOpen])
 
   useEffect(() => {
     const scrollPricingToCenter = () => {
@@ -1347,6 +1378,17 @@ export default function App() {
                     placeholder="+34 ..."
                   />
                 </label>
+                {/* Honeypot — oculto para humanos, visible para bots */}
+                <input
+                  type="text"
+                  name="website"
+                  autoComplete="off"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0 }}
+                />
+                {/* Turnstile widget — se renderiza via useEffect cuando el modal abre */}
+                <div ref={onboardingTurnstileContainer} className="flex justify-center" />
                 {onboardingError ? (
                   <div className="rounded-md border border-[#C52439]/40 bg-[#C52439]/15 px-4 py-3 text-sm font-semibold text-white">
                     {onboardingError}
@@ -1777,7 +1819,7 @@ export default function App() {
                   const res = await fetch('/contact.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(contactForm),
+                    body: JSON.stringify({ ...contactForm, website: '', 'cf-turnstile-response': contactTurnstileToken.current }),
                   })
                   const json = await res.json()
                   if (json.ok) {
@@ -1846,6 +1888,22 @@ export default function App() {
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#FFC107]/50 focus:ring-1 focus:ring-[#FFC107]/30"
                 />
               </div>
+              {/* Honeypot */}
+              <input
+                type="text"
+                name="website"
+                autoComplete="off"
+                tabIndex={-1}
+                aria-hidden="true"
+                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0 }}
+              />
+              {/* Turnstile widget — auto-render vía cf-turnstile class */}
+              <div
+                className="cf-turnstile flex justify-center"
+                data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                data-callback="__ncContactTurnstile"
+                data-expired-callback="__ncContactTurnstileExp"
+              />
               {contactError && (
                 <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
                   {contactError}

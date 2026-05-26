@@ -8,11 +8,78 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// ===================== Config =====================
+$config = __DIR__ . '/config.php';
+if (!file_exists($config)) {
+    http_response_code(503);
+    echo json_encode(['ok' => false, 'error' => 'Server configuration missing.']);
+    exit;
+}
+require_once $config;
+
+// ===================== Helpers =====================
+function clean($v)   { return trim(strip_tags((string)($v ?? ''))); }
+function no_hdrs($v) { return preg_replace('/[\r\n\t]/', ' ', $v); }
+
+function checkRateLimit($action, $ip, $limit = 5, $window = 900) {
+    $file = sys_get_temp_dir() . '/nc_rl_' . md5($ip . $action);
+    $now  = time();
+    $hits = [];
+    if (is_readable($file)) {
+        foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $t) {
+            if ($now - (int)$t < $window) $hits[] = (int)$t;
+        }
+    }
+    if (count($hits) >= $limit) return false;
+    $hits[] = $now;
+    @file_put_contents($file, implode("\n", $hits) . "\n");
+    return true;
+}
+
+function verifyTurnstile($token, $ip) {
+    if (empty($token)) return false;
+    $secret = defined('TURNSTILE_SECRET') ? TURNSTILE_SECRET : '';
+    if (empty($secret)) return true; // sin configurar = skip
+    $ctx = stream_context_create(['http' => [
+        'method'  => 'POST',
+        'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+        'content' => http_build_query(['secret' => $secret, 'response' => $token, 'remoteip' => $ip]),
+        'timeout' => 5,
+        'ignore_errors' => true,
+    ]]);
+    $res = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $ctx);
+    if ($res === false) return true; // Cloudflare inalcanzable → fail open
+    $json = json_decode($res, true);
+    return !empty($json['success']);
+}
+
+// ===================== Input =====================
 $raw  = file_get_contents('php://input');
 $data = json_decode($raw, true) ?: $_POST;
 
-function clean($v)   { return trim(strip_tags((string)($v ?? ''))); }
-function no_hdrs($v) { return preg_replace('/[\r\n\t]/', ' ', $v); }
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// Honeypot: campo oculto que los bots rellenan
+if (!empty($data['website'])) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Bot detected.']);
+    exit;
+}
+
+// Rate limit: 5 envíos por IP cada 15 minutos
+if (!checkRateLimit('contact', $ip)) {
+    http_response_code(429);
+    echo json_encode(['ok' => false, 'error' => 'Demasiados intentos. Espera unos minutos.']);
+    exit;
+}
+
+// Turnstile
+$turnstileToken = clean($data['cf-turnstile-response'] ?? '');
+if (!verifyTurnstile($turnstileToken, $ip)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Verificación de seguridad fallida. Recarga y vuelve a intentarlo.']);
+    exit;
+}
 
 $name    = no_hdrs(clean($data['name']    ?? ''));
 $email   = filter_var(clean($data['email'] ?? ''), FILTER_VALIDATE_EMAIL);
@@ -29,7 +96,6 @@ if (!$name || !$email || !$message) {
 define('SMTP_HOST',      'mail.neurocarta.ai');
 define('SMTP_PORT',      465);
 define('SMTP_USER',      'hola@neurocarta.ai');
-define('SMTP_PASS',      '4wfzR%672');
 define('SMTP_FROM_NAME', 'NeuroCarta.ai');
 
 function smtp_read($fp) {
@@ -73,7 +139,8 @@ function smtp_send($to, $subject, $html) {
     return true;
 }
 
-// ===================== Ejecutar =====================
+// ===================== Emails =====================
+$phoneStr = $phone ? $phone : '—';
 $confirmHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#0F0F0F;font-family:Arial,sans-serif;">
@@ -104,7 +171,6 @@ $confirmHtml = <<<HTML
 </body></html>
 HTML;
 
-$phoneStr = $phone ? $phone : '—';
 $notifyHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="font-family:Arial,sans-serif;color:#333;padding:24px;">
@@ -128,7 +194,6 @@ if ($r3 !== true) error_log('contact.php gerard r3='    . var_export($r3, true))
 if ($r4 !== true) error_log('contact.php francoise r4=' . var_export($r4, true));
 if ($r5 !== true) error_log('contact.php odoo r5='      . var_export($r5, true));
 
-// Éxito si al menos uno de los emails internos llega
 if ($r3 !== true && $r4 !== true && $r5 !== true) {
     error_log('contact.php all notify failed');
     http_response_code(500);

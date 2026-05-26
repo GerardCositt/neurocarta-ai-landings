@@ -8,11 +8,78 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// ===================== Config =====================
+$config = dirname(__DIR__) . '/config.php';
+if (!file_exists($config)) {
+    http_response_code(503);
+    echo json_encode(['ok' => false, 'error' => 'Server configuration missing.']);
+    exit;
+}
+require_once $config;
+
+// ===================== Helpers =====================
+function clean($v)   { return trim(strip_tags((string)($v ?? ''))); }
+function no_hdrs($v) { return preg_replace('/[\r\n\t]/', ' ', $v); }
+
+function checkRateLimit($action, $ip, $limit = 5, $window = 900) {
+    $file = sys_get_temp_dir() . '/nc_rl_' . md5($ip . $action);
+    $now  = time();
+    $hits = [];
+    if (is_readable($file)) {
+        foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $t) {
+            if ($now - (int)$t < $window) $hits[] = (int)$t;
+        }
+    }
+    if (count($hits) >= $limit) return false;
+    $hits[] = $now;
+    @file_put_contents($file, implode("\n", $hits) . "\n");
+    return true;
+}
+
+function verifyTurnstile($token, $ip) {
+    if (empty($token)) return false;
+    $secret = defined('TURNSTILE_SECRET') ? TURNSTILE_SECRET : '';
+    if (empty($secret)) return true;
+    $ctx = stream_context_create(['http' => [
+        'method'  => 'POST',
+        'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+        'content' => http_build_query(['secret' => $secret, 'response' => $token, 'remoteip' => $ip]),
+        'timeout' => 5,
+        'ignore_errors' => true,
+    ]]);
+    $res = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $ctx);
+    if ($res === false) return true;
+    $json = json_decode($res, true);
+    return !empty($json['success']);
+}
+
+// ===================== Input =====================
 $raw  = file_get_contents('php://input');
 $data = json_decode($raw, true) ?: $_POST;
 
-function clean($v)   { return trim(strip_tags((string)($v ?? ''))); }
-function no_hdrs($v) { return preg_replace('/[\r\n\t]/', ' ', $v); }
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// Honeypot
+if (!empty($data['website'])) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Bot detected.']);
+    exit;
+}
+
+// Rate limit: 5 envíos por IP cada 15 minutos
+if (!checkRateLimit('onboarding', $ip)) {
+    http_response_code(429);
+    echo json_encode(['ok' => false, 'error' => 'Demasiados intentos. Espera unos minutos.']);
+    exit;
+}
+
+// Turnstile
+$turnstileToken = clean($data['cf-turnstile-response'] ?? '');
+if (!verifyTurnstile($turnstileToken, $ip)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Verificación de seguridad fallida. Recarga y vuelve a intentarlo.']);
+    exit;
+}
 
 $name       = no_hdrs(clean($data['name']         ?? ''));
 $restaurant = no_hdrs(clean($data['restaurant']    ?? ''));
@@ -30,7 +97,6 @@ if (!$name || !$email) {
 define('SMTP_HOST',      'mail.neurocarta.ai');
 define('SMTP_PORT',      465);
 define('SMTP_USER',      'hola@neurocarta.ai');
-define('SMTP_PASS',      '4wfzR%672');
 define('SMTP_FROM_NAME', 'NeuroCarta.ai');
 
 function smtp_read($fp) {
@@ -79,7 +145,6 @@ $restaurantRow = $restaurant ? "<tr><td style='padding:8px 12px;background:#f9f7
 $phoneRow      = $phone      ? "<tr><td style='padding:8px 12px;background:#f9f7f0;font-weight:bold;'>Teléfono</td><td style='padding:8px 12px;border:1px solid #eee;'>$phone</td></tr>" : '';
 $spotsRow      = $spots      ? "<tr><td style='padding:8px 12px;background:#f9f7f0;font-weight:bold;'>Plazas</td><td style='padding:8px 12px;border:1px solid #eee;'>$spots</td></tr>" : '';
 
-// Email 1: confirmación al cliente
 $confirmHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#0F0F0F;font-family:Arial,sans-serif;">
@@ -113,7 +178,6 @@ $confirmHtml = <<<HTML
 </body></html>
 HTML;
 
-// Email 2: notificación interna
 $notifyHtml = <<<HTML
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="font-family:Arial,sans-serif;color:#333;padding:24px;">
@@ -137,5 +201,4 @@ if ($r2 !== true) {
     error_log('onboarding.php notify: ' . var_export($r2, true));
 }
 
-// Devolvemos OK siempre que los datos sean válidos (los errores de mail se logean)
 echo json_encode(['ok' => true]);
