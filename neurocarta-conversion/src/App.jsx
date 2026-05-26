@@ -284,6 +284,7 @@ export default function App() {
   const contactTurnstileToken    = useRef('')
   const onboardingTurnstileToken = useRef('')
   const onboardingTurnstileContainer = useRef(null)
+  const contactTurnstileContainer = useRef(null)
 
   // Pricing toggle
   const [annualBilling, setAnnualBilling] = useState(false)
@@ -384,13 +385,30 @@ export default function App() {
     }
   }
 
-  // Registrar callbacks Turnstile en window (llamados por data-callback)
+  // Render explícito del widget Turnstile en el form de contacto
   useEffect(() => {
-    window.__ncContactTurnstile    = (t) => { contactTurnstileToken.current = t }
-    window.__ncContactTurnstileExp = ()  => { contactTurnstileToken.current = '' }
+    const el = contactTurnstileContainer.current
+    if (!el) return
+    const tryRender = () => {
+      if (!window.turnstile) return
+      contactTurnstileToken.current = ''
+      const id = window.turnstile.render(el, {
+        sitekey:            import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA',
+        callback:           (t) => { contactTurnstileToken.current = t },
+        'expired-callback': () => { contactTurnstileToken.current = '' },
+      })
+      return id
+    }
+    // Turnstile puede cargar antes o después de React — intentamos inmediatamente
+    // y si no está listo, esperamos al evento de carga del script
+    let widgetId = tryRender()
+    const onLoad = () => { widgetId = tryRender() }
+    if (widgetId === undefined) {
+      document.querySelector('script[src*="turnstile"]')?.addEventListener('load', onLoad)
+    }
     return () => {
-      delete window.__ncContactTurnstile
-      delete window.__ncContactTurnstileExp
+      window.turnstile?.remove(widgetId)
+      document.querySelector('script[src*="turnstile"]')?.removeEventListener('load', onLoad)
     }
   }, [])
 
@@ -1897,13 +1915,8 @@ export default function App() {
                 aria-hidden="true"
                 style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0 }}
               />
-              {/* Turnstile widget — auto-render vía cf-turnstile class */}
-              <div
-                className="cf-turnstile flex justify-center"
-                data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
-                data-callback="__ncContactTurnstile"
-                data-expired-callback="__ncContactTurnstileExp"
-              />
+              {/* Turnstile widget — render explícito vía useEffect */}
+              <div ref={contactTurnstileContainer} className="flex justify-center" />
               {contactError && (
                 <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
                   {contactError}
