@@ -855,6 +855,14 @@ export default function App() {
                 {label}
               </a>
             ))}
+            <a
+              href="https://www.youtube.com/@Neurocarta"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md px-4 py-2 text-base font-semibold text-white/70 transition hover:text-white"
+            >
+              Tutoriales
+            </a>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -893,6 +901,15 @@ export default function App() {
                 {label}
               </a>
             ))}
+            <a
+              href="https://www.youtube.com/@Neurocarta"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block rounded-md px-3 py-3 text-base font-semibold text-white/70 transition hover:text-white"
+            >
+              Tutoriales
+            </a>
           </nav>
         )}
       </header>
