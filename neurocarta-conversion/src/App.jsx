@@ -856,9 +856,7 @@ export default function App() {
               </a>
             ))}
             <a
-              href="https://www.youtube.com/@Neurocarta"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#tutoriales"
               className="rounded-md px-4 py-2 text-base font-semibold text-white/70 transition hover:text-white"
             >
               Tutoriales
@@ -902,9 +900,7 @@ export default function App() {
               </a>
             ))}
             <a
-              href="https://www.youtube.com/@Neurocarta"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#tutoriales"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-md px-3 py-3 text-base font-semibold text-white/70 transition hover:text-white"
             >
@@ -1771,6 +1767,31 @@ export default function App() {
               Pedir propuesta
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* TUTORIALES */}
+      <section id="tutoriales" className="scroll-mt-24 border-t border-white/10 px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="mb-3 text-2xl font-black sm:text-3xl">Míralo en acción</h2>
+          <p className="mb-8 text-white/60">Un vídeo vale más que mil palabras. Aquí tienes cómo funciona NeuroCarta.</p>
+          <div className="relative mx-auto w-full overflow-hidden rounded-2xl shadow-2xl" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              className="absolute inset-0 h-full w-full"
+              src="https://www.youtube.com/embed/4DdhweE2Syc"
+              title="Tutorial NeuroCarta"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <a
+            href="https://www.youtube.com/@Neurocarta"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 text-sm text-white/50 transition hover:text-white/80"
+          >
+            Ver todos los vídeos en YouTube →
+          </a>
         </div>
       </section>
 
